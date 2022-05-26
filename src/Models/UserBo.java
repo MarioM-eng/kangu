@@ -135,7 +135,7 @@ public class UserBo extends ModelBo<UserVo>{
                 //Actualizamos la lista de usuarios almacenada en memoria
                 updateList();
                 //Buscamos y guardamos en la variable user al usuario agregado
-                user = find(callable.getInt(6));
+                user = findThroughList(callable.getInt(6));
             }else{
                 System.out.println("Usuario no agregado");
             }
