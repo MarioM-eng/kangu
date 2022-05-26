@@ -8,21 +8,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Conexion.Conexion;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 public class PersonBo extends ModelBo<PersonVo> {
 
     private static PersonBo singleton = new PersonBo();
-    private ObservableList<PersonVo> users;
 
     private PersonBo(){
-        if(this.users == null){
-            this.users = FXCollections.observableArrayList();
-        }
-        if(this.users.isEmpty()){
-            all();
-        }
+        super();//Se inicia el constructor padre
+        updateList();//Se llena o actualiza la lista de elementos
     }
 
     public static PersonBo getInstance(){
