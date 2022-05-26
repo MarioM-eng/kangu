@@ -4,7 +4,6 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +107,8 @@ public class UserBo extends ModelBo<UserVo>{
         return user;
     }
 
-    public UserVo create(PersonVo personVo, UserVo userVo){
+    public UserVo create(PersonVo personVo, UserVo userVo)
+    {
         //Se define la consulta que vamos a realizar
         String query = "CALL add_user(?,?,?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -156,6 +156,88 @@ public class UserBo extends ModelBo<UserVo>{
             }
         }
         return user;
+    }
 
+    public void update(UserVo userVo)
+    {
+        
+        //Se define la consulta que vamos a realizar
+        String query = "CALL update_user(?,?,?,?,?,?)";
+        //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
+        CallableStatement callable = null;
+        //Dentro de un try-catch creamos la conexión
+        try (Connection db = Conexion.getInstance().getConexion()){
+            //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
+            callable = db.prepareCall(query);
+            //Setea los parametros designados en los ?
+            callable.setInt(1, userVo.getPersonVo().getId());
+            callable.setString(2, userVo.getPersonVo().getName());
+            callable.setString(3, userVo.getPersonVo().getDni());
+            callable.setInt(4, userVo.getId());
+            callable.setString(5, userVo.getUsername());
+            callable.setString(6, userVo.getPassword());
+
+            //Ejecutamos
+            callable.executeUpdate();
+            System.out.println("Usuario actualizado");
+            //Utilizar hilos aquí
+            //Actualizamos la lista de usuarios almacenada en memoria
+            updateElement(userVo);
+            PersonBo.getInstance().updateElement(userVo.getPersonVo());
+            
+        } catch (SQLException e) {
+            //TODO: handle exception
+            System.err.println("Error al actualizar usuario: " + e.getMessage());
+        }catch (Exception e) {
+            //TODO: handle exception
+            System.err.println("Error al actualizar usuario: " + e.getMessage());
+        } finally{
+            if(callable != null){
+                try {
+                    callable.close();
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+
+    }
+
+    public void softDelete(UserVo userVo){
+        //Se define la consulta que vamos a realizar
+        String query = "CALL soft_delete_person(?)";
+        //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
+        CallableStatement callable = null;
+        //Dentro de un try-catch creamos la conexión
+        try (Connection db = Conexion.getInstance().getConexion()){
+            //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
+            callable = db.prepareCall(query);
+            //Setea los parametros designados en los ?
+            callable.setInt(1, userVo.getPersonVo().getId());
+
+            //Ejecutamos
+            callable.executeUpdate();
+            System.out.println("Usuario eliminado");
+            //Utilizar hilos aquí
+            //Actualizamos la lista de personas almacenada en memoria
+            PersonBo.getInstance().updateElement(userVo.getPersonVo());
+            
+        } catch (SQLException e) {
+            //TODO: handle exception
+            System.err.println("Error al eliminar usuario: " + e.getMessage());
+        }catch (Exception e) {
+            //TODO: handle exception
+            System.err.println("Error al eliminar usuario: " + e.getMessage());
+        } finally{
+            if(callable != null){
+                try {
+                    callable.close();
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
