@@ -4,6 +4,8 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,7 @@ public class UserBo extends ModelBo<UserVo>{
 
     private UserBo(){
         super();//Se inicia el constructor padre
-        updateList(all());//Se se llena o actualiza la lista de elementos
+        updateList();//Se llena o actualiza la lista de elementos
     }
 
     public static UserBo getInstance(){
@@ -106,4 +108,54 @@ public class UserBo extends ModelBo<UserVo>{
         return user;
     }
 
+    public UserVo create(PersonVo personVo, UserVo userVo){
+        //Se define la consulta que vamos a realizar
+        String query = "CALL add_user(?,?,?,?,?,?)";
+        //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
+        CallableStatement callable = null;
+        //La variable user la usaremos para retornar el usuario que se acaba de crear
+        UserVo user = null;
+        //Dentro de un try-catch creamos la conexión
+        try (Connection db = Conexion.getInstance().getConexion()){
+            //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
+            callable = db.prepareCall(query);
+            //Setea los parametros designados en los ?
+            callable.setString(1, personVo.getName());
+            callable.setString(2, personVo.getDni());
+            callable.setDate(3, personVo.getCreated_at());
+            callable.setString(4, userVo.getUsername());
+            callable.setString(5, userVo.getPassword());
+            callable.registerOutParameter(6, Types.INTEGER);
+
+            //Ejecutamos
+            if(callable.execute()){
+                System.out.println("Usuario agregado");
+                //Utilizar hilos aquí
+                //Actualizamos la lista de usuarios almacenada en memoria
+                updateList();
+                //Buscamos y guardamos en la variable user al usuario agregado
+                user = find(callable.getInt(6));
+            }else{
+                System.out.println("Usuario no agregado");
+            }
+            
+        } catch (SQLException e) {
+            //TODO: handle exception
+            System.err.println("Error al traer usuario: " + e.getMessage());
+        }catch (Exception e) {
+            //TODO: handle exception
+            System.err.println("Error al traer usuario: " + e.getMessage());
+        } finally{
+            if(callable != null){
+                try {
+                    callable.close();
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        return user;
+
+    }
 }

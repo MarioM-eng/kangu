@@ -15,13 +15,6 @@ public abstract class ModelBo<T> {
             this.elements = FXCollections.observableArrayList();
         }
     }
-
-    public ModelBo(List elements){
-        if(this.elements == null){
-            this.elements = FXCollections.observableArrayList();
-            updateList(elements);
-        }
-    }
     /**
      * Obtiene todos los elementos
      * @return
@@ -86,8 +79,8 @@ public abstract class ModelBo<T> {
     /***
      * Actualiza la lista almacenada en memoria directamente de la bd
      */
-    protected boolean updateList(List elements){
-        List list = elements;
+    protected boolean updateList(){
+        List list = all();
         if(!getElements().isEmpty()){
             if(getElements().containsAll(list)){
                 return false;
