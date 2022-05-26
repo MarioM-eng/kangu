@@ -107,7 +107,7 @@ public class UserBo extends ModelBo<UserVo>{
         return user;
     }
 
-    public UserVo create(PersonVo personVo, UserVo userVo)
+    public UserVo create(UserVo userVo)
     {
         //Se define la consulta que vamos a realizar
         String query = "CALL add_user(?,?,?,?,?,?)";
@@ -120,9 +120,9 @@ public class UserBo extends ModelBo<UserVo>{
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
-            callable.setString(1, personVo.getName());
-            callable.setString(2, personVo.getDni());
-            callable.setDate(3, personVo.getCreated_at());
+            callable.setString(1, userVo.getPersonVo().getName());
+            callable.setString(2, userVo.getPersonVo().getDni());
+            callable.setDate(3, userVo.getPersonVo().getCreated_at());
             callable.setString(4, userVo.getUsername());
             callable.setString(5, userVo.getPassword());
             callable.registerOutParameter(6, Types.INTEGER);
