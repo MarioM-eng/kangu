@@ -47,7 +47,8 @@ public class UserBo extends ModelBo<UserVo>{
                 usuario.setPassword(resultados.getString("password"));
                 usuario.setPersonVo(PersonBo.getInstance().findThroughList(resultados.getInt("person_id")));
                 usuario.setCreated_at(resultados.getDate("created_at"));
-                usuario.setUpdate_at(resultados.getDate("update_at"));
+                usuario.setUpdated_at(resultados.getDate("updated_at"));
+                usuario.setDeleted_at(resultados.getDate("deleted_at"));
                 lista.add(usuario);
             }
         } catch (SQLException e) {
@@ -83,7 +84,8 @@ public class UserBo extends ModelBo<UserVo>{
                 resultado.getString("password"),
                 PersonBo.getInstance().findThroughList(resultado.getInt("person_id")),
                 resultado.getDate("created_at"),
-                resultado.getDate("update_at"));
+                resultado.getDate("updated_at"),
+                resultado.getDate("deleted_at"));
             }else{
                 System.out.println("Usuario no encontrado");
             }
@@ -240,4 +242,42 @@ public class UserBo extends ModelBo<UserVo>{
             }
         }
     }
+
+    public void recovery(UserVo userVo){
+        //Se define la consulta que vamos a realizar
+        String query = "CALL recovery_person(?)";
+        //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
+        CallableStatement callable = null;
+        //Dentro de un try-catch creamos la conexión
+        try (Connection db = Conexion.getInstance().getConexion()){
+            //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
+            callable = db.prepareCall(query);
+            //Setea los parametros designados en los ?
+            callable.setInt(1, userVo.getPersonVo().getId());
+
+            //Ejecutamos
+            callable.executeUpdate();
+            System.out.println("Usuario recuperado");
+            //Utilizar hilos aquí
+            //Actualizamos la lista de personas almacenada en memoria
+            PersonBo.getInstance().updateElement(userVo.getPersonVo());
+            
+        } catch (SQLException e) {
+            //TODO: handle exception
+            System.err.println("Error al recuperar usuario: " + e.getMessage());
+        }catch (Exception e) {
+            //TODO: handle exception
+            System.err.println("Error al recuperar usuario: " + e.getMessage());
+        } finally{
+            if(callable != null){
+                try {
+                    callable.close();
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
 }
