@@ -2,26 +2,35 @@ package Models;
 
 import java.sql.Date;
 
+import javafx.beans.property.SimpleStringProperty;
+
 public class PersonVo extends ModelWithName {
     
-    private String dni;
+    private SimpleStringProperty dni;
     private Date created_at;
     private Date updated_at;
     private Date deleted_at;
 
     public PersonVo(int id, String name, String dni){
         super(id, name);
-        this.dni = dni;
+        this.dni = new SimpleStringProperty(dni);
     }
 
-    public PersonVo(){}
+    public PersonVo(){
+        super();
+        this.dni = new SimpleStringProperty();
+    }
 
     public String getDni() {
-        return dni;
+        return this.dni.get();
+    }
+
+    public SimpleStringProperty getDniProperty() {
+        return this.dni;
     }
 
     public void setDni(String dni) {
-        this.dni = dni;
+        this.dni.set(dni);
     }
 
     public Date getCreated_at() {
