@@ -35,7 +35,7 @@ public class Conexion {
     private String usuario = "";
     private String password = "";
     private String url = "";
-    private static final Conexion singleton = new Conexion();
+    private static Conexion instance;
 
     // public Conexion(String servidor, String database, String usuario, String password) {
     //     this.servidor = servidor;
@@ -63,8 +63,9 @@ public class Conexion {
         CrearConexion();
     }
 
-    public static Conexion getInstance(){
-        return singleton;
+    public static Conexion getNewInstance(){
+        instance = new Conexion();
+        return instance ;
     }
 
     public void CrearConexion() {

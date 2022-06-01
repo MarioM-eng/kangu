@@ -31,25 +31,27 @@ public class PatientBo extends ModelBo<PatientVo>{
         String query = "CALL all_patients()";
         CallableStatement callable = null;
 
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             callable = db.prepareCall(query);
             ResultSet resultados = callable.executeQuery(query);
             PatientVo patient;
             while(resultados.next()){
+                System.out.println(resultados.getInt("person_id"));
                 patient = new PatientVo();
                 patient.setId(resultados.getInt("id"));
                 patient.setAge(resultados.getString("age"));
                 patient.setSex(resultados.getString("sex"));
                 patient.setDiagnosis(resultados.getString("diagnosis"));
+                System.out.println("hola 1");
                 patient.setPerson(PersonBo.getInstance().findThroughList(resultados.getInt("person_id")));
                 lista.add(patient);
             }
         } catch (SQLException e) {
             //TODO: handle exception
-            System.err.println("Error al traer usuarios: " + e.getMessage());
+            System.err.println("1 - Error al traer pacientes: " + e.getMessage());
         }catch (Exception e) {
             //TODO: handle exception
-            System.err.println("Error al traer usuarios: " + e.getMessage());
+            System.err.println("2 - Error al traer pacientes: " + e.getMessage());
         } finally{
             if(callable != null){
                 try {
@@ -72,7 +74,7 @@ public class PatientBo extends ModelBo<PatientVo>{
         //La variable user la usaremos para retornar el usuario que se acaba de crear
         PatientVo patient = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
@@ -123,7 +125,7 @@ public class PatientBo extends ModelBo<PatientVo>{
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
@@ -169,7 +171,7 @@ public class PatientBo extends ModelBo<PatientVo>{
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
@@ -206,7 +208,7 @@ public class PatientBo extends ModelBo<PatientVo>{
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?

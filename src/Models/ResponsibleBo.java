@@ -31,7 +31,7 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
         String query = "CALL all_responsibles()";
         CallableStatement callable = null;
 
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             callable = db.prepareCall(query);
             ResultSet resultados = callable.executeQuery(query);
             ResponsibleVo responsible;
@@ -72,7 +72,7 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
         //La variable user la usaremos para retornar el usuario que se acaba de crear
         ResponsibleVo responsible = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
@@ -121,7 +121,7 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
@@ -165,7 +165,7 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
@@ -202,7 +202,7 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?

@@ -12,6 +12,7 @@ import Conexion.Conexion;
 public class PersonBo extends ModelBo<PersonVo> {
 
     private static PersonBo singleton = new PersonBo();
+    public static int c = 0;
 
     private PersonBo(){
         super();//Se inicia el constructor padre
@@ -25,10 +26,10 @@ public class PersonBo extends ModelBo<PersonVo> {
     @Override
     protected List<PersonVo> all() {
         List<PersonVo> lista = new ArrayList<>();
-        String query = "CALL all_users()";
+        String query = "CALL all_persons()";
         CallableStatement callable = null;
 
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             callable = db.prepareCall(query);
             ResultSet resultados = callable.executeQuery(query);
             PersonVo persona;

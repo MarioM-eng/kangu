@@ -36,7 +36,7 @@ public class UserBo extends ModelBo<UserVo>{
         String query = "CALL all_users()";
         CallableStatement callable = null;
 
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             callable = db.prepareCall(query);
             ResultSet resultados = callable.executeQuery(query);
             UserVo usuario;
@@ -74,7 +74,7 @@ public class UserBo extends ModelBo<UserVo>{
         UserVo user = null;
         String query = "CALL find_user(?)";
         CallableStatement callable = null;
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             callable = db.prepareCall(query);
             callable.setInt(1, id);
             ResultSet resultado = callable.executeQuery();
@@ -118,7 +118,7 @@ public class UserBo extends ModelBo<UserVo>{
         //La variable user la usaremos para retornar el usuario que se acaba de crear
         UserVo user = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
@@ -167,7 +167,7 @@ public class UserBo extends ModelBo<UserVo>{
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
@@ -211,7 +211,7 @@ public class UserBo extends ModelBo<UserVo>{
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
@@ -248,7 +248,7 @@ public class UserBo extends ModelBo<UserVo>{
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?

@@ -36,7 +36,7 @@ public class PatientResponsibleBo extends ModelBo<PatientResponsibleVo> {
         String query = "CALL all_patient_responsible()";
         CallableStatement callable = null;
 
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             callable = db.prepareCall(query);
             ResultSet resultados = callable.executeQuery(query);
             PatientResponsibleVo patientResponsibleVo;
@@ -72,7 +72,7 @@ public class PatientResponsibleBo extends ModelBo<PatientResponsibleVo> {
         String query = "CALL add_add_patient_responsible(?,?)";
         CallableStatement callable = null;
 
-        try (Connection db = Conexion.getInstance().getConexion()){
+        try (Connection db = Conexion.getNewInstance().getConexion()){
             callable = db.prepareCall(query);
             callable.setInt(1, patientVo.getId());
             callable.setInt(2, responsibleVo.getId());
