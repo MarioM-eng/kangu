@@ -36,13 +36,12 @@ public class PatientBo extends ModelBo<PatientVo>{
             ResultSet resultados = callable.executeQuery(query);
             PatientVo patient;
             while(resultados.next()){
-                System.out.println(resultados.getInt("person_id"));
                 patient = new PatientVo();
                 patient.setId(resultados.getInt("id"));
                 patient.setAge(resultados.getString("age"));
                 patient.setSex(resultados.getString("sex"));
+                patient.setDateBirth(resultados.getDate("date_birth"));
                 patient.setDiagnosis(resultados.getString("diagnosis"));
-                System.out.println("hola 1");
                 patient.setPerson(PersonBo.getInstance().findThroughList(resultados.getInt("person_id")));
                 lista.add(patient);
             }

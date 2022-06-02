@@ -16,6 +16,16 @@ public class App extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        //login(primaryStage);
+        URL ruta = ViewsPath.getInstance().getViewsPath().get("mPacientes");
+        String logo = "Images/logo.jpeg";
+        String title = "Pacientes";
+        WindowBuild windowBuild = WindowBuild.getInstance();
+        windowBuild.withStage(primaryStage).withUrl(ruta).withTitle(title).withLogo(logo).build();
+        windowBuild.show();
+    }
+
+    public void login(Stage primaryStage){
         URL ruta = ViewsPath.getInstance().getViewsPath().get("Login");
         String logo = "Images/logo.jpeg";
         String title = "Login";

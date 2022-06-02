@@ -3,11 +3,13 @@ package Helpers.ViewCreator;
 import java.io.IOException;
 import java.net.URL;
 
+import Helpers.ViewsPath;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class WindowBuild implements IBuilder{
@@ -17,6 +19,10 @@ public class WindowBuild implements IBuilder{
 
     private WindowBuild(){
         this.window = new Window();
+    }
+
+    public Window getWindow(){
+        return this.window;
     }
 
     public static WindowBuild getInstance(){
@@ -100,4 +106,21 @@ public class WindowBuild implements IBuilder{
         
     }
     
+    /**
+     * Crea una nueva vista dentro de la scene principal
+     * @param nameView es el nombre de la vista 
+     */
+    public void newView(String nameView){
+        HBox hBox = (HBox) this.window.getStage().getScene().getRoot().getChildrenUnmodifiable().get(1);
+        FXMLLoader fxmlLoader  = new FXMLLoader();
+        fxmlLoader.setLocation(ViewsPath.getInstance().getViewsPath().get(nameView));
+        Parent root;
+        try {
+            root = fxmlLoader.load();
+            hBox.getChildren().setAll(root);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 }

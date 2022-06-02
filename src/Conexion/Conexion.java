@@ -14,7 +14,6 @@ import java.io.IOException;
  */
 import java.sql.Connection;          //Aqui obtenemos el metodo conectar
 import java.sql.DriverManager;       //Aqui obtenemos el manejo del driver de java a mysql
-import java.sql.PreparedStatement;   //Aqui obtenemos una sintaxis facil de crear sentencias sql
 import java.sql.SQLException;        //Aqui obtenemos los metodo para manejo de excepciones
 import java.util.Properties;
 import java.util.logging.Level;
