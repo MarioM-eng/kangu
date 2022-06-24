@@ -1,15 +1,14 @@
 package Helpers.ViewCreator;
 
 import java.io.IOException;
-import java.net.URL;
 
 import Helpers.ViewsPath;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class WindowBuild implements IBuilder{
@@ -30,15 +29,14 @@ public class WindowBuild implements IBuilder{
     }
 
     public static WindowBuild getNewInstance(){
-        return new WindowBuild();
+        WindowBuild windowBuild = new WindowBuild();
+        Stage stage = new Stage();
+        windowBuild.withStage(stage);
+        return windowBuild;
     }
 
     public WindowBuild withStage(Stage stage){
         this.window.setStage(stage);
-        return this;
-    }
-    public WindowBuild withUrl(URL path){
-        this.window.setPath(path);
         return this;
     }
     public WindowBuild withTitle(String title){
@@ -46,7 +44,16 @@ public class WindowBuild implements IBuilder{
         return this;
     }
     public WindowBuild withLogo(String path){ 
-        this.window.setRutaLogo(new Image(path));
+        this.window.setLogo(new Image(path));
+        return this;
+    }
+    public WindowBuild withObject(Object object){ 
+        this.window.setObject(object);
+        return this;
+    }
+
+    public WindowBuild withScene(Scene scene){
+        this.window.setScene(scene);
         return this;
     }
 
@@ -61,24 +68,11 @@ public class WindowBuild implements IBuilder{
     @Override
     public Window build() {
         if(validateStage()){
-            if(this.window.getPath() != null){
-                FXMLLoader fxmlLoader  = new FXMLLoader();
-                fxmlLoader.setLocation(this.window.getPath());
-                Parent root;
-                try {
-                    root = (AnchorPane) fxmlLoader.load();
-                    Scene scene = new Scene(root);
-                    this.window.getStage().setScene(scene);
-                    this.window.getStage().getIcons().add(this.window.getRutaLogo());
-                    this.window.getStage().setTitle(this.window.getTitle());
-                    this.window.getStage().centerOnScreen();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    System.out.println("Error al asignar el root node" + e.getMessage());
-                }
-            }else{
-                System.out.println("Sin ruta de vista");
-            }
+            this.window.getStage().setScene(this.window.getScene());
+            //this.window.getStage().getScene().setUserData(this.window.getObject());
+            this.window.getStage().getIcons().add(this.window.getLogo());
+            this.window.getStage().setTitle(this.window.getTitle());
+            this.window.getStage().centerOnScreen();
         }else{
             System.out.println("Sin Stage");
         }
@@ -90,13 +84,30 @@ public class WindowBuild implements IBuilder{
 
     @Override
     public void show() {
-        if(validateStage()){
-            this.window.getStage().show();
-        }else{
-            System.out.println("Sin Stage");
-        }
-        // TODO Auto-generated method stub
+        this.window.getStage().show();        
+    }
+
+    @Override
+    public void showAndWait() {
+        this.window.getStage().showAndWait();
         
+    }
+
+    @Override
+    public void modal() {
+        
+        this.window.getStage().initModality(Modality.APPLICATION_MODAL);
+        
+    }
+
+    @Override
+    public void setDataUser(Object object) {
+        this.window.getStage().setUserData(object);
+    }
+
+    @Override
+    public Object getDataUser() {
+        return this.window.getStage().getUserData();
     }
 
     @Override
@@ -123,4 +134,5 @@ public class WindowBuild implements IBuilder{
             e.printStackTrace();
         }
     }
+    
 }

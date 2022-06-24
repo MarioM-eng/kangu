@@ -1,26 +1,24 @@
+.backGround{
+    -fx-background-color: #ffffff;
+}
+/* LABEL */
 .label {
     -fx-font-family: "Berlin Sans FB";
-    -fx-font-size: 16px;
+    -fx-font-size: 14px;
     -fx-text-fill: #378d4c;
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
-
-#btn-update{
-    -fx-background-color: #198754;
-    -fx-border-color: #198754;
+.label-error {
+    -fx-font-family: "Berlin Sans FB";
+    -fx-font-size: 12px;
+    -fx-text-fill: #c5111d;
+    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
-#btn-update:hover{
-    -fx-background-color: #157347;
-    -fx-border-color: #146c43;
-}
-
-#btn-consult{
-    -fx-background-color: #6c757d;
-    -fx-border-color: #6c757d;
-}
-#btn-consult:hover{
-    -fx-background-color: #5c636a;
-    -fx-border-color: #565e64;
+.label-good {
+    -fx-font-family: "Berlin Sans FB";
+    -fx-font-size: 12px;
+    -fx-text-fill: #198754;
+    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
 
 .border-error{
@@ -39,6 +37,13 @@
 }
 
 /* Botones */
+.btn{
+    -fx-cursor: hand;
+}
+.btn-group .btn{
+    -fx-pref-width: 122;
+    -fx-min-width: 50;
+}
 .btn-large{
     -fx-padding:5 50 5 50;
 }
@@ -86,4 +91,38 @@
 .btn-yellow-disable{
     -fx-background-color: #ffc107;
     -fx-border-color: #ffc107;
+}
+
+.btn-green{
+    -fx-text-fill: white;
+    -fx-font-family: "Berlin Sans FB Demi";
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-color: #198754;
+    -fx-border-color: #198754;
+}
+.btn-green:hover{
+    -fx-background-color: #157347;
+    -fx-border-color: #146c43;
+}
+
+.btn-gray{
+    -fx-text-fill: white;
+    -fx-font-family: "Berlin Sans FB Demi";
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-background-color: #6c757d;
+    -fx-border-color: #6c757d;
+}
+.btn-gray:hover{
+    -fx-background-color: #5c636a;
+    -fx-border-color: #565e64;
+}
+
+/* Bordes */
+.border-red{
+    -fx-border-color: #c5111d;
+}
+.border-green{
+    -fx-border-color: #198754;
 }

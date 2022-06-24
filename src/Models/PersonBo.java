@@ -1,67 +1,46 @@
 package Models;
 
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import Conexion.Conexion;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
-public class PersonBo extends ModelBo<PersonVo> {
+public abstract class PersonBo<T> extends ModelBo<T> {
 
-    private static PersonBo singleton = new PersonBo();
-    public static int c = 0;
-
-    private PersonBo(){
-        super();//Se inicia el constructor padre
-        updateList();//Se llena o actualiza la lista de elementos
-    }
-
-    public static PersonBo getInstance(){
-        return singleton;
-    }
-
-    @Override
-    protected List<PersonVo> all() {
-        List<PersonVo> lista = new ArrayList<>();
-        String query = "CALL all_persons()";
-        CallableStatement callable = null;
-
-        try (Connection db = Conexion.getNewInstance().getConexion()){
-            callable = db.prepareCall(query);
-            ResultSet resultados = callable.executeQuery(query);
-            PersonVo persona;
-            while(resultados.next()){
-                persona = new PersonVo();
-                persona.setId(resultados.getInt("id"));
-                persona.setName(resultados.getString("name"));
-                persona.setDni(resultados.getString("dni"));
-                persona.setCreated_at(resultados.getDate("created_at"));
-                persona.setUpdated_at(resultados.getDate("updated_at"));
-                persona.setDeleted_at(resultados.getDate("deleted_at"));
-                lista.add(persona);
-            }
-        } catch (SQLException e) {
-            //TODO: handle exception
-            System.err.println("Error al traer personas: " + e.getMessage());
-        }catch (Exception e) {
-            //TODO: handle exception
-            System.err.println("Error al traer personas: " + e.getMessage());
-        } finally{
-            if(callable != null){
-                try {
-                    callable.close();
-                } catch (SQLException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+    /**
+     * Busca a través de la lista de elementos con un caracter o cadena dada
+     * @param dato 
+     * @return ObservableList<Person>
+     */
+    public ObservableList<T> searchThroughList(String dato)
+    {
+        ObservableList<T> resultados = FXCollections.observableArrayList();
+        String ex = ".*"+ dato +".*";
+        Pattern pat = Pattern.compile(ex);
+        Matcher matName = null;
+        Matcher matDni = null;
+        for (T t : getElements()) {
+            Person person = ((Person) t);
+            matName = pat.matcher(person.getName());
+            matDni = pat.matcher(person.getDni());
+            if(matName.matches() && matDni.matches()){
+                resultados.add(t);
+            }else if(matName.matches() || matDni.matches()){
+                resultados.add(t);
             }
         }
-        return lista;
+        
+        return resultados;
     }
 
-    
+    protected boolean checkPerson(Person person){
+        for (T t : getElements()) {
+            if(((Person) t).getDni().equals(person.getDni())){
+                return true;
+            }
+        }
+        return false;
+    }
     
 }

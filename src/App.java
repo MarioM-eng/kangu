@@ -1,10 +1,18 @@
 import java.net.URL;
+import java.sql.Date;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 
 import Conexion.Conexion;
+import Controllers.ScheduleController;
 import Helpers.HelperENCRYPT;
 import Helpers.ViewsPath;
+import Helpers.ViewCreator.SceneBuilder;
 import Helpers.ViewCreator.WindowBuild;
+import Models.PatientBo;
+import Models.PatientVo;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application{
@@ -17,11 +25,14 @@ public class App extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
         //login(primaryStage);
-        URL ruta = ViewsPath.getInstance().getViewsPath().get("mPacientes");
+        
         String logo = "Images/logo.jpeg";
-        String title = "Pacientes";
+        String title = "Agenda";
+        URL ruta = ViewsPath.getInstance().getViewsPath().get(title);
         WindowBuild windowBuild = WindowBuild.getInstance();
-        windowBuild.withStage(primaryStage).withUrl(ruta).withTitle(title).withLogo(logo).build();
+        ScheduleController controller = new ScheduleController(PatientBo.getInstance().findThroughList(8));
+        Scene scene = new SceneBuilder().withPath(ruta).withController(controller).build();
+        windowBuild.withStage(primaryStage).withTitle(title).withLogo(logo).withScene(scene).build();
         windowBuild.show();
     }
 
@@ -30,7 +41,8 @@ public class App extends Application{
         String logo = "Images/logo.jpeg";
         String title = "Login";
         WindowBuild windowBuild = WindowBuild.getInstance();
-        windowBuild.withStage(primaryStage).withUrl(ruta).withTitle(title).withLogo(logo).build();
+        Scene scene = new SceneBuilder().withPath(ruta).build();
+        windowBuild.withStage(primaryStage).withTitle(title).withLogo(logo).withScene(scene).build();
         windowBuild.show();
     }
         

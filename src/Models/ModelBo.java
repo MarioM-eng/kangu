@@ -25,30 +25,36 @@ public abstract class ModelBo<T> {
 
     /**
      * Agrega un elemento que no esté ya en la lista
-     * @param producto
-     * @return ObservableList<ProductVo>
+     * @param element elemento que se quiere agregar
+     * @return true si se agregó y false si no
      */
-    protected void addElement(ModelWithName element) {
+    protected boolean addElement(T element) {
         if(!getElements().isEmpty()){
             if(!getElements().contains(element)){
-                getElements().add((T) element);
+                getElements().add(element);
+                return true;
             }
+        }else{
+            getElements().add(element);
+            return true;
         }
+        return false;
     }
 
     /**
      * Actualiza un elemento de la lista
-     * @param detail
-     * @return
+     * @param element
+     * @return <code>true</code> si fue actualizda la lista y <code>false</code> si no
      */
-    protected boolean updateElement(Model element) {
+    protected boolean updateElement(T element) {
         if(!getElements().isEmpty()){
             Iterator<T> iterator = getElements().iterator();
             while(iterator.hasNext()){
-                Model elementVo = Model.class.cast(iterator.next());
-                if(elementVo.getId() == element.getId()){
-                    getElements().remove(elementVo);
-                    getElements().add((T) element);
+                T elementVo = (T) iterator.next();
+                if(((Model) elementVo).getId() == ((Model) element).getId()){
+                    deleteElement(elementVo);
+                    addElement(element);
+                    break;
                 }
             }
         }
@@ -59,12 +65,12 @@ public abstract class ModelBo<T> {
      * Elimina un elemento
      * @param element
      */
-    protected void deleteElement(Model element) {
-        if(!getElements().isEmpty()){
-            if(getElements().contains(element)){
-                getElements().remove(element);
-            }
+    protected boolean deleteElement(T element) {
+        if(isFound(element)){
+            getElements().remove(element);
+            return true;
         }
+        return false;
     }
 
     /**
@@ -80,12 +86,12 @@ public abstract class ModelBo<T> {
      * Actualiza la lista almacenada en memoria directamente de la bd
      */
     protected boolean updateList(){
-        List list = all();
+        List<T> list = all();
         if(!getElements().isEmpty()){
             if(getElements().containsAll(list)){
                 return false;
             }else{
-                getElements().removeAll();
+                getElements().removeAll(getElements());
                 getElements().addAll(list);
                 return true;
             }
@@ -102,12 +108,11 @@ public abstract class ModelBo<T> {
      */
     public T findThroughList(int id){
         for (T t : getElements()) {
-            Model model = (Model) t;
-            if(model.getId() == id){
-                return (T) model;
+            if(((Model) t).getId() == id){
+                return t;
             }
         }
-        System.out.println(ElementNameToString() + " no encontrado");
+        System.out.println("Elemento no encontrado");
         return null;
     }
 
@@ -121,18 +126,21 @@ public abstract class ModelBo<T> {
         
     }
 
-    private String ClassNameToString(Class c){
-        String name = c.getName();
-        name = name.toLowerCase();
-        name = name.concat("s");
-        return name;
-    }
 
-    private String ElementNameToString(){
-        T t = null;
-        String name = t.getClass().getName();
-        name = name.substring(0, name.length()-2);
-        return name;
+    /**
+     * Elimina un elemento
+     * @param element
+     */
+    protected boolean isFound(T element) {
+        if(!getElements().isEmpty()){
+            if(getElements().contains(element)){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 
     /**

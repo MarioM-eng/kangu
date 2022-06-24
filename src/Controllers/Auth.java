@@ -79,7 +79,7 @@ public class Auth implements Initializable{
     public static boolean logout(){
         String title = "Login";
         URL ruta = ViewsPath.getInstance().getViewsPath().get(title);
-        WindowBuild.getInstance().withTitle(title).withUrl(ruta).build();
+        WindowBuild.getInstance().withTitle(title).build();
         login = false;
         return login;
     }

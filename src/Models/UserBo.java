@@ -10,7 +10,7 @@ import java.util.List;
 
 import Conexion.Conexion;
 
-public class UserBo extends ModelBo<UserVo>{
+public class UserBo extends PersonBo<UserVo>{
     
     private static UserBo singleton = new UserBo();
 
@@ -43,9 +43,10 @@ public class UserBo extends ModelBo<UserVo>{
             while(resultados.next()){
                 usuario = new UserVo();
                 usuario.setId(resultados.getInt("id"));
+                usuario.setName(resultados.getString("name"));
+                usuario.setDni(resultados.getString("dni"));
                 usuario.setUsername(resultados.getString("username"));
                 usuario.setPassword(resultados.getString("password"));
-                usuario.setPersonVo(PersonBo.getInstance().findThroughList(resultados.getInt("person_id")));
                 usuario.setCreated_at(resultados.getDate("created_at"));
                 usuario.setUpdated_at(resultados.getDate("updated_at"));
                 usuario.setDeleted_at(resultados.getDate("deleted_at"));
@@ -70,7 +71,7 @@ public class UserBo extends ModelBo<UserVo>{
         return lista;
     } 
 
-    public UserVo find(int id){
+    public UserVo findById(int id){
         UserVo user = null;
         String query = "CALL find_user(?)";
         CallableStatement callable = null;
@@ -78,11 +79,12 @@ public class UserBo extends ModelBo<UserVo>{
             callable = db.prepareCall(query);
             callable.setInt(1, id);
             ResultSet resultado = callable.executeQuery();
-            if(resultado != null){
+            if(resultado.first()){
                 user = new UserVo(resultado.getInt("id"),
+                resultado.getString("name"),
+                resultado.getString("dni"),
                 resultado.getString("username"),
                 resultado.getString("password"),
-                PersonBo.getInstance().findThroughList(resultado.getInt("person_id")),
                 resultado.getDate("created_at"),
                 resultado.getDate("updated_at"),
                 resultado.getDate("deleted_at"));
@@ -111,33 +113,37 @@ public class UserBo extends ModelBo<UserVo>{
 
     public UserVo create(UserVo userVo)
     {
+        
+        if(checkPerson(userVo)){
+            return null;
+        }
+
         //Se define la consulta que vamos a realizar
         String query = "CALL add_user(?,?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
-        //La variable user la usaremos para retornar el usuario que se acaba de crear
-        UserVo user = null;
         //Dentro de un try-catch creamos la conexión
         try (Connection db = Conexion.getNewInstance().getConexion()){
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
-            callable.setString(1, userVo.getPersonVo().getName());
-            callable.setString(2, userVo.getPersonVo().getDni());
+            callable.setString(1, userVo.getName());
+            callable.setString(2, userVo.getDni());
             callable.setString(3, userVo.getUsername());
             callable.setString(4, userVo.getPassword());
             callable.registerOutParameter(5, Types.INTEGER);
-
             //Ejecutamos
-            if(callable.execute()){
-                System.out.println("Usuario agregado");
-                //Utilizar hilos aquí
-                //Actualizamos la lista de usuarios almacenada en memoria
-                updateList();
-                //Buscamos y guardamos en la variable user al usuario agregado
-                user = findThroughList(callable.getInt(6));
+            if(callable.executeUpdate() != -1){
+                //Buscamos al usuario agregado en la db
+                userVo = findById(callable.getInt(5));
+                //Agregamos al elemento en la lista; Retorna true si se agregó exitosamente
+                if(addElement(userVo)){
+                    System.out.println("Usuario agregado");
+                }else{
+                    System.out.println("No fue posible agregar el elemento a la lista");
+                }
             }else{
-                System.out.println("Usuario no agregado");
+                System.out.println("No fue posible registar usuario a la base de datos");
             }
             
         } catch (SQLException e) {
@@ -156,14 +162,14 @@ public class UserBo extends ModelBo<UserVo>{
                 }
             }
         }
-        return user;
+        return userVo;
     }
 
     public void update(UserVo userVo)
     {
         
         //Se define la consulta que vamos a realizar
-        String query = "CALL update_user(?,?,?,?,?,?)";
+        String query = "CALL update_user(?,?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
@@ -171,12 +177,11 @@ public class UserBo extends ModelBo<UserVo>{
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
-            callable.setInt(1, userVo.getPersonVo().getId());
-            callable.setString(2, userVo.getPersonVo().getName());
-            callable.setString(3, userVo.getPersonVo().getDni());
-            callable.setInt(4, userVo.getId());
-            callable.setString(5, userVo.getUsername());
-            callable.setString(6, userVo.getPassword());
+            callable.setInt(1, userVo.getId());
+            callable.setString(2, userVo.getName());
+            callable.setString(3, userVo.getDni());
+            callable.setString(4, userVo.getUsername());
+            callable.setString(5, userVo.getPassword());
 
             //Ejecutamos
             callable.executeUpdate();
@@ -184,7 +189,6 @@ public class UserBo extends ModelBo<UserVo>{
             //Utilizar hilos aquí
             //Actualizamos la lista de usuarios almacenada en memoria
             updateElement(userVo);
-            PersonBo.getInstance().updateElement(userVo.getPersonVo());
             
         } catch (SQLException e) {
             //TODO: handle exception
@@ -207,7 +211,7 @@ public class UserBo extends ModelBo<UserVo>{
 
     public void softDelete(UserVo userVo){
         //Se define la consulta que vamos a realizar
-        String query = "CALL soft_delete_person(?)";
+        String query = "CALL soft_delete_person(?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
@@ -215,14 +219,16 @@ public class UserBo extends ModelBo<UserVo>{
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
-            callable.setInt(1, userVo.getPersonVo().getId());
+            callable.setInt(1, userVo.getId());
+            callable.registerOutParameter(2, Types.DATE);
 
             //Ejecutamos
             callable.executeUpdate();
-            System.out.println("Usuario eliminado");
             //Utilizar hilos aquí
             //Actualizamos la lista de personas almacenada en memoria
-            PersonBo.getInstance().updateElement(userVo.getPersonVo());
+            userVo.setDeleted_at(callable.getDate(2));
+            updateElement(userVo);
+            System.out.println("Usuario eliminado");
             
         } catch (SQLException e) {
             //TODO: handle exception
@@ -252,14 +258,14 @@ public class UserBo extends ModelBo<UserVo>{
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
-            callable.setInt(1, userVo.getPersonVo().getId());
+            callable.setInt(1, userVo.getId());
 
             //Ejecutamos
             callable.executeUpdate();
             System.out.println("Usuario recuperado");
             //Utilizar hilos aquí
             //Actualizamos la lista de personas almacenada en memoria
-            PersonBo.getInstance().updateElement(userVo.getPersonVo());
+            updateElement(userVo);
             
         } catch (SQLException e) {
             //TODO: handle exception
@@ -279,4 +285,12 @@ public class UserBo extends ModelBo<UserVo>{
         }
     }
 
+    public boolean checkUserName(String userName){
+        for (UserVo user : UserBo.getInstance().getElements()) {
+            if(user.getUsername().equals(userName)){
+                return true;
+            }
+        }
+        return false;
+    }
 }

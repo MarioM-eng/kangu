@@ -1,38 +1,22 @@
 package Models;
 
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-public class ResponsibleVo extends Model {
+public class ResponsibleVo extends Person {
 
-    private SimpleObjectProperty<PersonVo> person;
     private SimpleStringProperty cel;
     private SimpleStringProperty address;
 
-    public ResponsibleVo(int id, PersonVo person, String cel, String address) {
-        super(id);
-        this.person = new SimpleObjectProperty<>(person);
+    public ResponsibleVo(int id, String name, String dni, String cel, String address) {
+        super(id,name,dni);
         this.cel = new SimpleStringProperty(cel);
         this.address = new SimpleStringProperty(address);
     }
 
     public ResponsibleVo() {
         super();
-        this.person = new SimpleObjectProperty<>();
         this.cel = new SimpleStringProperty();
         this.address = new SimpleStringProperty();
-    }
-
-    public PersonVo getPerson() {
-        return person.get();
-    }
-
-    public SimpleObjectProperty<PersonVo> getPersonProperty() {
-        return person;
-    }
-
-    public void setPerson(PersonVo person) {
-        this.person.set(person);
     }
 
     public String getCel() {

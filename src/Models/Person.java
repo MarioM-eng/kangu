@@ -4,19 +4,19 @@ import java.sql.Date;
 
 import javafx.beans.property.SimpleStringProperty;
 
-public class PersonVo extends ModelWithName {
+public abstract class Person extends ModelWithName {
     
     private SimpleStringProperty dni;
     private Date created_at;
     private Date updated_at;
     private Date deleted_at;
 
-    public PersonVo(int id, String name, String dni){
+    public Person(int id, String name, String dni){
         super(id, name);
         this.dni = new SimpleStringProperty(dni);
     }
 
-    public PersonVo(){
+    public Person(){
         super();
         this.dni = new SimpleStringProperty();
     }

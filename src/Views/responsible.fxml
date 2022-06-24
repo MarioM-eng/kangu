@@ -16,7 +16,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane stylesheets="@css/styles.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="anchor" stylesheets="@css/styles.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ResponsibleController">
    <children>
       <StackPane AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
          <children>
@@ -32,7 +32,7 @@
                                     <VBox>
                                        <children>
                                           <TextField fx:id="tfDni" prefHeight="25.0" prefWidth="149.0" />
-                                          <Label fx:id="mensajeCodLb">
+                                          <Label fx:id="mensajeCodLb" styleClass="label-error" text="error">
                                              <font>
                                                 <Font size="10.0" />
                                              </font>
@@ -51,7 +51,7 @@
                                     <VBox>
                                        <children>
                                           <TextField fx:id="tfName" />
-                                          <Label fx:id="mensajeNameLb">
+                                          <Label fx:id="mensajeNameLb" styleClass="label-error" text="error">
                                              <font>
                                                 <Font size="10.0" />
                                              </font>
@@ -60,35 +60,58 @@
                                     </VBox>
                                  </children>
                               </VBox>
-                              <VBox layoutX="21.0" layoutY="76.0">
+                              <VBox layoutX="21.0" layoutY="83.0">
                                  <children>
                                     <Label text="Celular" />
                                     <TextField fx:id="tfCel" />
+                                    <Label styleClass="label-error" text="Label" />
                                  </children>
                               </VBox>
-                              <VBox layoutX="218.0" layoutY="76.0">
+                              <VBox layoutX="218.0" layoutY="83.0">
                                  <children>
                                     <Label text="Dirección" />
                                     <TextField fx:id="tfAddress" />
+                                    <Label styleClass="label-error" text="Label" />
                                  </children>
                               </VBox>
-                              <HBox alignment="CENTER" layoutX="138.0" layoutY="138.0" />
-                              <Button fx:id="btnAdd" layoutX="124.0" layoutY="138.0" mnemonicParsing="false" textFill="WHITE">
-                                 <graphic>
-                                    <ImageView fitHeight="27.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../Images/white/005-add.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                                 <styleClass>
-                                    <String fx:value="btn-blue" />
-                                    <String fx:value="btn-large" />
-                                 </styleClass>
-                              </Button>
+                              <HBox alignment="CENTER" layoutX="64.0" layoutY="161.0" spacing="5.0">
+                                 <children>
+                                    <Button fx:id="btnAdd" mnemonicParsing="false" textFill="WHITE">
+                                       <graphic>
+                                          <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../Images/white/005-add.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <styleClass>
+                                          <String fx:value="btn-blue" />
+                                          <String fx:value="btn" />
+                                          <String fx:value="btn-large" />
+                                       </styleClass>
+                                    </Button>
+                                    <Button fx:id="btnCleanUp" layoutX="137.0" layoutY="10.0" mnemonicParsing="false" textFill="WHITE">
+                                       <graphic>
+                                          <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../Images/white/005-add.png" />
+                                             </image>
+                                          </ImageView>
+                                       </graphic>
+                                       <cursor>
+                                          <Cursor fx:constant="HAND" />
+                                       </cursor>
+                                       <styleClass>
+                                          <String fx:value="btn-yellow" />
+                                          <String fx:value="btn" />
+                                          <String fx:value="btn-large" />
+                                       </styleClass>
+                                    </Button>
+                                 </children>
+                              </HBox>
                            </children>
                            <padding>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -101,29 +124,21 @@
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
                               <TextField fx:id="tfSearch" />
-                              <Button id="btn-consult" fx:id="btnSearch" mnemonicParsing="false" prefHeight="25.0" prefWidth="0.0">
+                              <Button fx:id="btnAll" layoutX="169.0" layoutY="10.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="0.0">
                                  <cursor>
                                     <Cursor fx:constant="HAND" />
                                  </cursor>
                                  <graphic>
-                                    <ImageView fitHeight="27.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../Images/white/001-loupe.png" />
-                                       </image>
-                                    </ImageView>
-                                 </graphic>
-                              </Button>
-                              <Button id="btn-consult" fx:id="btnAll" layoutX="169.0" layoutY="10.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="0.0">
-                                 <cursor>
-                                    <Cursor fx:constant="HAND" />
-                                 </cursor>
-                                 <graphic>
-                                    <ImageView fitHeight="27.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
+                                    <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
                                           <Image url="@../Images/white/003-list.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
+                                 <styleClass>
+                                    <String fx:value="btn-gray" />
+                                    <String fx:value="btn" />
+                                 </styleClass>
                               </Button>
                            </children>
                         </HBox>

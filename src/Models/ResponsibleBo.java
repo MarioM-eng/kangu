@@ -10,7 +10,7 @@ import java.util.List;
 
 import Conexion.Conexion;
 
-public class ResponsibleBo extends ModelBo<ResponsibleVo> {
+public class ResponsibleBo extends PersonBo<ResponsibleVo> {
 
     private static ResponsibleBo singleton = new ResponsibleBo();
 
@@ -38,9 +38,13 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
             while(resultados.next()){
                 responsible = new ResponsibleVo();
                 responsible.setId(resultados.getInt("id"));
+                responsible.setName(resultados.getString("name"));
+                responsible.setDni(resultados.getString("dni"));
                 responsible.setCel(resultados.getString("cel"));
                 responsible.setAddress(resultados.getString("address"));
-                responsible.setPerson(PersonBo.getInstance().findThroughList(resultados.getInt("person_id")));
+                responsible.setCreated_at(resultados.getDate("created_at"));
+                responsible.setUpdated_at(resultados.getDate("updated_at"));
+                responsible.setDeleted_at(resultados.getDate("deleted_at"));
                 lista.add(responsible);
             }
         } catch (SQLException e) {
@@ -63,8 +67,17 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
 
     }
 
+    /**
+     * Crea un elemento en base de datos
+     * @param responsibleVo resive el elemento
+     * @return el elemento. Si ya existe, retorna null
+     */
     public ResponsibleVo create(ResponsibleVo responsibleVo)
     {
+        if(checkPerson(responsibleVo)){
+            return null;
+        }
+
         //Se define la consulta que vamos a realizar
         String query = "CALL add_responsible(?,?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -76,30 +89,25 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
-            callable.setString(1, responsibleVo.getPerson().getName());
-            callable.setString(2, responsibleVo.getPerson().getDni());
+            callable.setString(1, responsibleVo.getName());
+            callable.setString(2, responsibleVo.getDni());
             callable.setString(3, responsibleVo.getCel());
             callable.setString(4, responsibleVo.getAddress());
             callable.registerOutParameter(5, Types.INTEGER);
-
             //Ejecutamos
-            if(callable.execute()){
-                System.out.println("Responsable de paciente agregado");
-                //Utilizar hilos aquí
-                //Actualizamos la lista de usuarios almacenada en memoria
-                updateList();
-                //Buscamos y guardamos en la variable user al usuario agregado
-                responsible = findThroughList(callable.getInt(6));
-            }else{
-                System.out.println("Responsable de paciente no agregado");
-            }
+            callable.executeUpdate();
+            //Utilizar hilos aquí
+            //Buscamos y guardamos en la variable responsible al responsable agregado agregado
+            responsible = findById(callable.getInt(5));
+            addElement(responsible);
+            System.out.println("Responsable de paciente agregado");
             
         } catch (SQLException e) {
             //TODO: handle exception
-            System.err.println("Error al traer Responsable de paciente: " + e.getMessage());
+            System.err.println("Error al agregar Responsable de paciente: " + e.getMessage());
         }catch (Exception e) {
             //TODO: handle exception
-            System.err.println("Error al traer Responsable de paciente: " + e.getMessage());
+            System.err.println("Error al agregar Responsable de paciente: " + e.getMessage());
         } finally{
             if(callable != null){
                 try {
@@ -117,7 +125,7 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
     {
         
         //Se define la consulta que vamos a realizar
-        String query = "CALL update_patient(?,?,?,?,?,?)";
+        String query = "CALL update_responsible(?,?,?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
@@ -125,20 +133,18 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
-            callable.setInt(1, responsibleVo.getPerson().getId());
-            callable.setString(2, responsibleVo.getPerson().getName());
-            callable.setString(3, responsibleVo.getPerson().getDni());
-            callable.setInt(4, responsibleVo.getId());
-            callable.setString(5, responsibleVo.getCel());
-            callable.setString(6, responsibleVo.getAddress());
+            callable.setInt(1, responsibleVo.getId());
+            callable.setString(2, responsibleVo.getName());
+            callable.setString(3, responsibleVo.getDni());
+            callable.setString(4, responsibleVo.getCel());
+            callable.setString(5, responsibleVo.getAddress());
 
             //Ejecutamos
             callable.executeUpdate();
-            System.out.println("Usuario actualizado");
+            System.out.println("Responsable de paciente actualizado");
             //Utilizar hilos aquí
-            //Actualizamos la lista de usuarios almacenada en memoria
+            //Actualizamos la lista de responsables almacenada en memoria
             updateElement(responsibleVo);
-            PersonBo.getInstance().updateElement(responsibleVo.getPerson());
             
         } catch (SQLException e) {
             //TODO: handle exception
@@ -156,12 +162,11 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
                 }
             }
         }
-
     }
 
     public void softDelete(ResponsibleVo responsibleVo){
         //Se define la consulta que vamos a realizar
-        String query = "CALL soft_delete_person(?)";
+        String query = "CALL soft_delete_person(?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
@@ -169,14 +174,16 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
-            callable.setInt(1, responsibleVo.getPerson().getId());
+            callable.setInt(1, responsibleVo.getId());
+            callable.registerOutParameter(2, Types.DATE);
 
             //Ejecutamos
             callable.executeUpdate();
-            System.out.println("Responsable del paciente eliminado");
             //Utilizar hilos aquí
             //Actualizamos la lista de personas almacenada en memoria
-            PersonBo.getInstance().updateElement(responsibleVo.getPerson());
+            responsibleVo.setDeleted_at(callable.getDate(2));
+            updateElement(responsibleVo);
+            System.out.println("Responsable del paciente eliminado");
             
         } catch (SQLException e) {
             //TODO: handle exception
@@ -206,14 +213,14 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
-            callable.setInt(1, responsibleVo.getPerson().getId());
+            callable.setInt(1, responsibleVo.getId());
 
             //Ejecutamos
             callable.executeUpdate();
             System.out.println("Responsable del paciente recuperado");
             //Utilizar hilos aquí
             //Actualizamos la lista de personas almacenada en memoria
-            PersonBo.getInstance().updateElement(responsibleVo.getPerson());
+            updateElement(responsibleVo);
             
         } catch (SQLException e) {
             //TODO: handle exception
@@ -233,5 +240,50 @@ public class ResponsibleBo extends ModelBo<ResponsibleVo> {
         }
     }
 
-    
+    public ResponsibleVo findById(int id)
+    {
+        
+        //Se define la consulta que vamos a realizar
+        String query = "CALL find_responsible(?)";
+        //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
+        CallableStatement callable = null;
+        ResponsibleVo responsible = null;
+        //Dentro de un try-catch creamos la conexión
+        try (Connection db = Conexion.getNewInstance().getConexion()){
+            callable = db.prepareCall(query);
+            callable.setInt(1, id);
+            ResultSet resultado = callable.executeQuery();
+            if(resultado.first()){
+                responsible = new ResponsibleVo();
+                responsible.setId(resultado.getInt("person_id"));
+                responsible.setName(resultado.getString("name"));
+                responsible.setDni(resultado.getString("dni"));
+                responsible.setCel(resultado.getString("cel"));
+                responsible.setAddress(resultado.getString("address"));
+                responsible.setCreated_at(resultado.getDate("created_at"));
+                responsible.setUpdated_at(resultado.getDate("updated_at"));
+                responsible.setDeleted_at(resultado.getDate("deleted_at"));
+            }
+
+            
+            
+        } catch (SQLException e) {
+            //TODO: handle exception
+            System.err.println("Error al buscar responsable del paciente: " + e.getMessage());
+        }catch (Exception e) {
+            //TODO: handle exception
+            System.err.println("Error al buscar responsable del paciente: " + e.getMessage());
+        } finally{
+            if(callable != null){
+                try {
+                    callable.close();
+                } catch (SQLException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        }
+        return responsible;
+    }
+
 }
