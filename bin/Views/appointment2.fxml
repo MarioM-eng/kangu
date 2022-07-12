@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="650.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="650.0" styleClass="backGround" stylesheets="@css/styles.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0">
+         <children>
+            <VBox prefWidth="100.0" spacing="10.0">
+               <children>
+                  <HBox fx:id="paneProffesional" alignment="CENTER" />
+               </children>
+            </VBox>
+            <HBox fx:id="hBBottom" alignment="CENTER">
+               <children>
+                  <Pane fx:id="pNumber1" minHeight="300.0" minWidth="300.0">
+                     <children>
+                        <VBox fx:id="pCalendar" alignment="CENTER" minHeight="350.0" minWidth="300.0" spacing="15.0">
+                           <children>
+                              <Label fx:id="lbSchedule" alignment="CENTER" contentDisplay="CENTER" styleClass="label-title" text="Sesiones con ..." />
+                              <HBox>
+                                 <children>
+                                    <CheckBox fx:id="cbRangeMode" mnemonicParsing="false" text="Modo Rango" />
+                                 </children>
+                              </HBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </Pane>
+                  <Separator fx:id="sPane" orientation="VERTICAL" prefHeight="200.0" />
+                  <Pane fx:id="pNumber2" layoutX="10.0" layoutY="10.0" minHeight="350.0" minWidth="300.0">
+                     <children>
+                        <VBox alignment="CENTER" layoutX="20.0" layoutY="14.0">
+                           <children>
+                              <HBox alignment="BOTTOM_LEFT" prefHeight="56.0" prefWidth="250.0" spacing="10.0">
+                                 <children>
+                                    <VBox prefHeight="200.0">
+                                       <children>
+                                          <Label text="Desde" />
+                                          <DatePicker fx:id="dpFrom" editable="false" />
+                                       </children>
+                                    </VBox>
+                                    <VBox prefHeight="200.0">
+                                       <children>
+                                          <Label text="Hasta" />
+                                          <DatePicker fx:id="dpTo" editable="false" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <VBox alignment="CENTER" prefHeight="87.0" prefWidth="250.0">
+                                 <children>
+                                    <Label text="Repetir" />
+                                    <GridPane fx:id="gpDays" disable="true" prefHeight="60.0" prefWidth="284.0">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="96.0" minWidth="57.0" prefWidth="61.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="149.0" minWidth="10.0" prefWidth="70.0" />
+                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="149.0" minWidth="10.0" prefWidth="69.0" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                       </rowConstraints>
+                                       <children>
+                                          <CheckBox mnemonicParsing="false" text="Lunes" />
+                                          <CheckBox mnemonicParsing="false" text="Martes" GridPane.columnIndex="1" />
+                                          <CheckBox mnemonicParsing="false" text="Miércoles" GridPane.columnIndex="2" />
+                                          <CheckBox mnemonicParsing="false" text="Jueves" GridPane.rowIndex="1" />
+                                          <CheckBox mnemonicParsing="false" text="Viernes" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                          <CheckBox mnemonicParsing="false" text="Una vez" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                       </children>
+                                       <VBox.margin>
+                                          <Insets />
+                                       </VBox.margin>
+                                    </GridPane>
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </padding>
+                        </VBox>
+                        <VBox fx:id="paneSchedule" layoutX="42.0" layoutY="175.0" />
+                        <Button fx:id="btnSave" layoutX="72.0" layoutY="310.0" mnemonicParsing="false" text="Guardar">
+                           <styleClass>
+                              <String fx:value="btn" />
+                              <String fx:value="btn-blue" />
+                              <String fx:value="btn-large" />
+                           </styleClass>
+                        </Button>
+                     </children>
+                  </Pane>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

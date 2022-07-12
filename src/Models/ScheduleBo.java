@@ -4,13 +4,14 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 import Conexion.Conexion;
+import Models.Relationships.BelongsTo;
+import javafx.collections.ObservableList;
 
-public class ScheduleBo extends ModelBo<ScheduleVo> {
+public class ScheduleBo extends ModelBo<ScheduleVo> implements BelongsTo<ScheduleVo,AppointmentVo>{
 
     private static ScheduleBo singleton = new ScheduleBo();
 
@@ -37,12 +38,10 @@ public class ScheduleBo extends ModelBo<ScheduleVo> {
             while(resultados.next()){
                 schedule = new ScheduleVo();
                 schedule.setId(resultados.getInt("id"));
-                schedule.setFrom(resultados.getDate("date_from"));
-                schedule.setTo(resultados.getDate("date_to"));
-                schedule.setHourFrom(resultados.getTime("h_from"));
-                schedule.setHourTo(resultados.getTime("h_to"));
-                schedule.setPatient(PatientBo.getInstance().findThroughList(resultados.getInt("patient_id")));
-                schedule.setUser(UserBo.getInstance().findThroughList(resultados.getInt("user_id")));
+                schedule.setFrom(resultados.getTime("hour_from"));
+                schedule.setTo(resultados.getTime("hour_to"));
+                schedule.setDay(resultados.getDate("day"));
+                schedule.setAppointment(AppointmentBo.getInstance().findThroughList(resultados.getInt("appointment_id")));
                 lista.add(schedule);
             }
         } catch (SQLException e) {
@@ -65,14 +64,14 @@ public class ScheduleBo extends ModelBo<ScheduleVo> {
         
     }
 
-    public ScheduleVo create(ScheduleVo scheduleVo)
+    public boolean create(ScheduleVo scheduleVo)
     {
-
+        boolean completed = false;
         if(exist(scheduleVo)){
-            return null;
+            return completed;
         }
         //Se define la consulta que vamos a realizar
-        String query = "CALL add_schedule(?,?,?,?,?,?,?)";
+        String query = "CALL add_schedule(?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
@@ -80,23 +79,14 @@ public class ScheduleBo extends ModelBo<ScheduleVo> {
             //Creamos el objeto tipo CallableStatement para llamar al procedimiento almacenado
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
-            callable.setDate(1, scheduleVo.getFrom());
-            callable.setDate(2, scheduleVo.getTo());
-            callable.setTime(3, scheduleVo.getHourFrom());
-            callable.setTime(4, scheduleVo.getHourTo());
-            callable.setInt(5, scheduleVo.getPatient().getId());
-            callable.setInt(6, scheduleVo.getUser().getId());
-            callable.registerOutParameter(7, Types.INTEGER);
+            callable.setTime(1, scheduleVo.getFrom());
+            callable.setTime(2, scheduleVo.getTo());
+            callable.setDate(3, scheduleVo.getDay());
+            callable.setInt(4, scheduleVo.getAppointment().getId());
             //Ejecutamos
             if(callable.executeUpdate() != -1){
-                //Buscamos al usuario agregado en la db
-                scheduleVo = findById(callable.getInt(8));
-                //Agregamos al elemento en la lista; Retorna true si se agregó exitosamente
-                if(addElement(scheduleVo)){
                     System.out.println("Agenda agregada");
-                }else{
-                    System.out.println("No fue posible agregar el elemento a la lista");
-                }
+                    completed = true;
             }else{
                 System.out.println("No fue posible registar agenda a la base de datos");
             }
@@ -117,14 +107,14 @@ public class ScheduleBo extends ModelBo<ScheduleVo> {
                 }
             }
         }
-        return scheduleVo;
+        return completed;
     }
 
     public void update(ScheduleVo scheduleVo)
     {
         
         //Se define la consulta que vamos a realizar
-        String query = "CALL update_schedule(?,?,?,?,?,?)";
+        String query = "CALL update_schedule(?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
@@ -133,10 +123,9 @@ public class ScheduleBo extends ModelBo<ScheduleVo> {
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
             callable.setInt(1, scheduleVo.getId());
-            callable.setDate(2, scheduleVo.getFrom());
-            callable.setDate(3, scheduleVo.getTo());
-            callable.setTime(4, scheduleVo.getHourFrom());
-            callable.setTime(5, scheduleVo.getHourTo());
+            callable.setTime(2, scheduleVo.getFrom());
+            callable.setTime(3, scheduleVo.getTo());
+            callable.setDate(4, scheduleVo.getDay());
 
             //Ejecutamos
             if(callable.executeUpdate() != -1){
@@ -171,7 +160,7 @@ public class ScheduleBo extends ModelBo<ScheduleVo> {
 
     public void delete(ScheduleVo scheduleVo){
         //Se define la consulta que vamos a realizar
-        String query = "CALL soft_delete_person(?)";
+        String query = "CALL delete_schedule(?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
@@ -180,7 +169,6 @@ public class ScheduleBo extends ModelBo<ScheduleVo> {
             callable = db.prepareCall(query);
             //Setea los parametros designados en los ?
             callable.setInt(1, scheduleVo.getId());
-            callable.registerOutParameter(2, Types.DATE);
 
             //Ejecutamos
             if(callable.executeUpdate() != -1){
@@ -222,12 +210,10 @@ public class ScheduleBo extends ModelBo<ScheduleVo> {
             ResultSet resultado = callable.executeQuery();
             if(resultado.first()){
                 scheduleVo = new ScheduleVo(resultado.getInt("id"),
-                resultado.getDate("date_from"),
-                resultado.getDate("date_to"),
-                resultado.getTime("h_from"),
-                resultado.getTime("h_to"),
-                PatientBo.getInstance().findThroughList(resultado.getInt("patient_id")),
-                UserBo.getInstance().findThroughList(resultado.getInt("user_id")));
+                resultado.getTime("hour_from"),
+                resultado.getTime("hour_to"),
+                resultado.getDate("day"),
+                AppointmentBo.getInstance().findThroughList(resultado.getInt("appointment_id")));
             }else{
                 System.out.println("Elemento no encontrado");
             }
@@ -253,14 +239,23 @@ public class ScheduleBo extends ModelBo<ScheduleVo> {
 
     private boolean exist(ScheduleVo scheduleVo){
         for (ScheduleVo schedule : getElements()) {
-            if(schedule.getPatient().getId() == scheduleVo.getPatient().getId() &&
-            schedule.getUser().getId() == scheduleVo.getUser().getId()){
+            if(schedule.getDay() == scheduleVo.getDay() &&
+            schedule.getFrom() == scheduleVo.getFrom()){
                 return true;
             }
         }
 
         return false;
     }
+
+    @Override
+    public ObservableList<ScheduleVo> getElementsOf(AppointmentVo element) {
+        return getElements().filtered(
+            el -> el.getAppointment().equals(element)
+        );
+    }
+
+
 
     
     

@@ -66,7 +66,7 @@ public class UserController implements Initializable {
         UserVo UserVo = tblElements.getSelectionModel().getSelectedItem();
         String title = "Perfiles";
         URL ruta = ViewsPath.getInstance().getViewsPath().get(title);
-        ProfileUserController controller = new ProfileUserController(UserVo);
+        ProfileController controller = new ProfileController(UserVo);
         SceneBuilder sb = new SceneBuilder();
         sb.withPath(ruta).withController(controller);
         Scene scene = sb.build();

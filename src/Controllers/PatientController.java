@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
+import Controllers.Schedule.AppointmentController;
 import Helpers.ViewsPath;
 import Helpers.ViewCreator.SceneBuilder;
 import Helpers.ViewCreator.WindowBuild;
@@ -97,7 +98,8 @@ public class PatientController implements Initializable {
         PatientVo patientVo = tblElements.getSelectionModel().getSelectedItem();
         String title = "Agenda";
         URL ruta = ViewsPath.getInstance().getViewsPath().get(title);
-        ScheduleController controller = new ScheduleController(patientVo);
+        AppointmentController controller = new AppointmentController();
+        controller.getParams().put("patient", patientVo);
         SceneBuilder sb = new SceneBuilder();
         sb.withPath(ruta).withController(controller);
         Scene scene = sb.build();

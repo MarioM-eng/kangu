@@ -11,7 +11,10 @@ public class ViewsPath {
     private final URL  PATIENT = getClass().getResource("/Views/patient.fxml");
     private final URL  LOGIN = getClass().getResource("/Views/login.fxml");
     private final URL  ACUDIENTE = getClass().getResource("/Views/responsible.fxml");
-    private final URL  AGENDA = getClass().getResource("/Views/schedule.fxml");
+    private final URL  AGENDA = getClass().getResource("/Views/appointment2.fxml");
+    private final URL  SCHEDULE = getClass().getResource("/Views/schedule.fxml");
+    private final URL  PROFESSIONAL = getClass().getResource("/Views/professional.fxml");
+    private final URL  INTERVAL = getClass().getResource("/Views/interval.fxml");
     private final URL  USER = getClass().getResource("/Views/user.fxml");
     private final URL  HOME = getClass().getResource("/Views/home.fxml");
     private final URL  RESPONSABILITY = getClass().getResource("/Views/responsability.fxml");
@@ -36,6 +39,9 @@ public class ViewsPath {
         VIEWS.put("login", LOGIN);
         VIEWS.put("Acudiente", ACUDIENTE);
         VIEWS.put("Agenda", AGENDA);
+        VIEWS.put("Horario", SCHEDULE);
+        VIEWS.put("Profesional", PROFESSIONAL);
+        VIEWS.put("Intervalo", INTERVAL);
         VIEWS.put("Principal", HOME);
         VIEWS.put("Usuario", USER);
         VIEWS.put("Responsabilidad", RESPONSABILITY);

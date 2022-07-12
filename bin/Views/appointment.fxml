@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0" stylesheets="@css/styles.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox fx:id="hBBottom" alignment="CENTER">
+         <children>
+            <Pane fx:id="pNumber1" minHeight="300.0" minWidth="300.0">
+               <children>
+                  <VBox alignment="CENTER" minWidth="300.0" spacing="10.0">
+                     <children>
+                        <Label fx:id="lbSchedule" text="Sesiones con ..." />
+                     </children>
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding>
+                  </VBox>
+                  <Pane fx:id="pCalendar" layoutX="50.0" layoutY="75.0" prefHeight="200.0" prefWidth="200.0" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </Pane>
+            <Separator fx:id="sPane" orientation="VERTICAL" prefHeight="200.0" />
+            <Pane fx:id="pNumber2" layoutX="10.0" layoutY="10.0" minHeight="350.0" minWidth="300.0">
+               <children>
+                  <Pane fx:id="paneSchedule" layoutX="25.0" layoutY="14.0" />
+                  <VBox fx:id="vbWorkingHours" layoutX="42.0" layoutY="175.0" />
+                  <Button fx:id="btnSave" layoutX="72.0" layoutY="310.0" mnemonicParsing="false" text="Guardar">
+                     <styleClass>
+                        <String fx:value="btn" />
+                        <String fx:value="btn-blue" />
+                        <String fx:value="btn-large" />
+                     </styleClass>
+                  </Button>
+               </children>
+            </Pane>
+         </children>
+      </HBox>
+   </children>
+</VBox>

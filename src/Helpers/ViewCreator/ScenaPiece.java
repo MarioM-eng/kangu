@@ -9,6 +9,8 @@ public class ScenaPiece {
     private Pane pane;
     private URL path;
     private String title;
+    private Object controller;
+
     public Pane getPane() {
         return pane;
     }
@@ -27,7 +29,12 @@ public class ScenaPiece {
     public void setTitle(String title) {
         this.title = title;
     }
-
+    public Object getController() {
+        return controller;
+    }
+    public void setController(Object controller) {
+        this.controller = controller;
+    }
     
     
 }

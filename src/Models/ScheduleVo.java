@@ -5,84 +5,43 @@ import java.sql.Time;
 
 public class ScheduleVo extends Model {
 
-    private Date from;
-    private Date to;
-    private Time hourFrom;
-    private Time hourTo;
-    private PatientVo patient;
-    private UserVo user;
-
-    public ScheduleVo(int id, Date from, Date to, Time hourFrom, Time hourTo, PatientVo patient, UserVo user) {
+    private Time from;
+    private Time to;
+    private Date day;
+    private AppointmentVo appointment;
+    
+    public ScheduleVo(int id, Time from, Time to, Date day, AppointmentVo appointment) {
         super(id);
         this.from = from;
         this.to = to;
-        this.hourFrom = hourFrom;
-        this.hourTo = hourTo;
-        this.patient = patient;
-        this.user = user;
+        this.day = day;
+        this.appointment = appointment;
     }
+    public ScheduleVo() {}
     
-    public ScheduleVo() {
-        this.hourFrom = Time.valueOf("0:00:00");
-        this.hourTo = Time.valueOf("0:00:00");
-    }
-
-    public Date getFrom() {
+    public Time getFrom() {
         return from;
     }
-
-    public void setFrom(Date from) {
+    public void setFrom(Time from) {
         this.from = from;
     }
-
-    public Date getTo() {
+    public Time getTo() {
         return to;
     }
-
-    public void setTo(Date to) {
+    public void setTo(Time to) {
         this.to = to;
     }
-
-    public Time getHourFrom() {
-        return hourFrom;
+    public Date getDay() {
+        return day;
     }
-
-    public void setHourFrom(Time hourFrom) {
-        this.hourFrom = hourFrom;
+    public void setDay(Date day) {
+        this.day = day;
     }
-
-    public Time getHourTo() {
-        return hourTo;
+    public AppointmentVo getAppointment() {
+        return appointment;
     }
-
-    public void setHourTo(Time hourTo) {
-        this.hourTo = hourTo;
-    }
-
-    public PatientVo getPatient() {
-        return patient;
-    }
-
-    public void setPatient(PatientVo patient) {
-        this.patient = patient;
-    }
-
-    public UserVo getUser() {
-        return user;
-    }
-
-    public void setUser(UserVo user) {
-        this.user = user;
-    }
-
-    public void setSchedule(ScheduleVo scheduleVo) {
-        super.setId(scheduleVo.getId());
-        this.from = scheduleVo.getFrom();
-        this.to = scheduleVo.getTo();
-        this.hourFrom = scheduleVo.getHourFrom();
-        this.hourTo = scheduleVo.getHourTo();
-        this.patient = scheduleVo.getPatient();
-        this.user = scheduleVo.getUser();
+    public void setAppointment(AppointmentVo appointment) {
+        this.appointment = appointment;
     }
     
 }

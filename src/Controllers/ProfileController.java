@@ -18,7 +18,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-public class ProfileUserController implements Initializable{
+public class ProfileController implements Initializable{
 
     private Object param;
     ManyToManyBo<UserVo,ProfileVo,UserBo,ProfileBo> manyToManyBo;
@@ -34,11 +34,11 @@ public class ProfileUserController implements Initializable{
     @FXML
     private TableView<ManyToMany<UserVo,ProfileVo>> tblElements;
 
-    public ProfileUserController(){
+    public ProfileController(){
         manyToManyBo = new ManyToManyBo<>(new UserVo(), new ProfileVo(), UserBo.getInstance(),ProfileBo.getInstance());
     }
 
-    public ProfileUserController(Object param){
+    public ProfileController(Object param){
         this.param = param;
         manyToManyBo = new ManyToManyBo<>(new UserVo(), new ProfileVo(), UserBo.getInstance(),ProfileBo.getInstance());
     }

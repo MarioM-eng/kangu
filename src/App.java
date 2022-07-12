@@ -1,16 +1,12 @@
 import java.net.URL;
-import java.sql.Date;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
 
-import Conexion.Conexion;
-import Controllers.ScheduleController;
-import Helpers.HelperENCRYPT;
+import Controllers.ProfessionalController;
+import Controllers.Schedule.AppointmentController;
 import Helpers.ViewsPath;
+import Helpers.Facades.View;
 import Helpers.ViewCreator.SceneBuilder;
 import Helpers.ViewCreator.WindowBuild;
 import Models.PatientBo;
-import Models.PatientVo;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -25,15 +21,18 @@ public class App extends Application{
     @Override
     public void start(Stage primaryStage) throws Exception {
         //login(primaryStage);
+        AppointmentController controller = new AppointmentController();
+        controller.getParams().put("patient", PatientBo.getInstance().findThroughList(8));
+        View.getInstance().createModal(controller, "Agenda");
         
-        String logo = "Images/logo.jpeg";
-        String title = "Agenda";
+        /* String logo = "Images/logo.jpeg";
+        String title = "Profesional";
         URL ruta = ViewsPath.getInstance().getViewsPath().get(title);
         WindowBuild windowBuild = WindowBuild.getInstance();
-        ScheduleController controller = new ScheduleController(PatientBo.getInstance().findThroughList(8));
+        
         Scene scene = new SceneBuilder().withPath(ruta).withController(controller).build();
         windowBuild.withStage(primaryStage).withTitle(title).withLogo(logo).withScene(scene).build();
-        windowBuild.show();
+        windowBuild.show(); */
     }
 
     public void login(Stage primaryStage){
