@@ -6,7 +6,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import Controllers.ScheduleController;
 import Controllers.Schedule.AppointmentController;
+import Helpers.Facades.View;
 import Models.ScheduleVo;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -139,8 +141,18 @@ public class DateCalendar {
                     if(action.getButton().equals(MouseButton.PRIMARY)){
                         if(getAppointmentController().getCbRangeMode().isSelected()){
                             selecionOfDateRange(item);
-                        }else{
+                        }/* else{
                             daySelected(item);
+                        } */
+
+                        if(action.getClickCount() >= 2){
+                            ScheduleVo scheduleVo = daySelected(item);
+                            scheduleVo.setAppointment(getAppointmentController().getAppointmentVo());
+                            ScheduleController controller = new ScheduleController(scheduleVo);
+                            View.getInstance().createModalWithWait(controller, "Horario");
+                            if(scheduleVo.getFrom() == null){
+                                dayUnSelected(item);
+                            }
                         }
                     }
                 }
@@ -159,13 +171,14 @@ public class DateCalendar {
     /**
      * Agrega a la lista de días marcados(markedDays) un día y marca la celda
      */
-    private void daySelected(LocalDate day){
+    private ScheduleVo daySelected(LocalDate day){
         if (!getMarkedDays().containsKey(day)) {
-            ScheduleVo scheduleVo = new ScheduleVo();
-            scheduleVo.setDay(Date.valueOf(day));
-            getMarkedDays().put(day, scheduleVo);
+            ScheduleVo schedule = new ScheduleVo();
+            schedule.setDay(Date.valueOf(day));
+            getMarkedDays().put(day, schedule);
             markCell(findDateCell(day));
         }
+        return getMarkedDays().get(day);
     }
     /**
      * Agrega a la lista de días marcados(markedDays) un día y marca la celda
@@ -300,7 +313,7 @@ public class DateCalendar {
      * @param day día del cúal se quiere encontrar el DateCell
      * @return el DateCell
      */
-    private DateCell findDateCell(LocalDate day){
+    public DateCell findDateCell(LocalDate day){
         for (DateCell dCell : getDateCells()) {
             if(dCell.getItem().equals(day)){
                 return dCell;

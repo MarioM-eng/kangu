@@ -42,4 +42,16 @@ public class View {
         windowBuild.show();
     }
 
+    public void createModalWithWait(Controller controller, String nombre){
+        URL ruta = ViewsPath.getInstance().getViewsPath().get(nombre);
+        SceneBuilder sb = new SceneBuilder();
+        sb.withPath(ruta).withController(controller);
+        Scene scene = sb.build();
+        windowBuild = WindowBuild.getNewInstance();
+        String logo = "Images/logo.jpeg";
+        windowBuild.withLogo(logo).modal();
+        windowBuild.withTitle(nombre).withScene(scene).build();
+        windowBuild.showAndWait();
+    }
+
 }

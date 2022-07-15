@@ -1,21 +1,21 @@
 package Controllers;
 
 import java.net.URL;
-import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalTime;
 import java.util.ResourceBundle;
 
-import Helpers.Calendar.DateCalendar;
-import Models.AppointmentVo;
+import Models.AppointmentBo;
 import Models.ScheduleBo;
 import Models.ScheduleVo;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 
 public class ScheduleController extends Controller implements Initializable{
 
@@ -25,12 +25,17 @@ public class ScheduleController extends Controller implements Initializable{
     private ComboBox<Time> cbHEnd;
     @FXML
     private TextField tfDay;
+    @FXML
+    private Button btnSave;
+
+    private Pane parent;
+    private ScheduleVo schedule;
     
-    private DateCalendar dateCalendar;
 
 
-    public ScheduleController(DateCalendar dateCalendar) {
-        this.dateCalendar = dateCalendar;
+    public ScheduleController() {}
+    public ScheduleController(ScheduleVo schedule) {
+        this.schedule = schedule;
     }
 
     public ComboBox<Time> getCbHStart() {
@@ -53,46 +58,21 @@ public class ScheduleController extends Controller implements Initializable{
     public void setTfDay(TextField tfDay) {
         this.tfDay = tfDay;
     }
+    
 
-    public DateCalendar getDateCalendar() {
-        return dateCalendar;
-    }
-    public void setDateCalendar(DateCalendar dateCalendar) {
-        this.dateCalendar = dateCalendar;
-    }
-
-    public void create(AppointmentVo appointmentVo, ScheduleVo scheduleVo){
+    public void create(ScheduleVo scheduleVo){
 
         scheduleVo.setFrom(cbHStart.getSelectionModel().getSelectedItem());
         scheduleVo.setTo(cbHEnd.getSelectionModel().getSelectedItem());
-        scheduleVo.setAppointment(appointmentVo);
         if (!ScheduleBo.getInstance().create(scheduleVo)) {
             System.out.println("Horario del día " + scheduleVo.getDay() + " no se pudo crear");
         }
         
     }
 
-    /* private void valuesDefault(){
-        cbHStart.getSelectionModel().clearSelection();
-        cbHEnd.setItems(null);
-        tfDay.setText("");
-    } */
-
-    public void chargeSchedule(ScheduleVo schedule,Date day){
-        chargeHours(schedule);
-        if(day == null){
-            tfDay.setText("General");
-        }else{
-            tfDay.setText(schedule.getDay().toString());
-        }
-    }
-
-    private void chargeHours(ScheduleVo scheduleVo){
+    public void chargeHours(ScheduleVo scheduleVo){
         cbHStart.getSelectionModel().select(scheduleVo.getFrom());
         cbHEnd.getSelectionModel().select(scheduleVo.getTo());
-        /* cbHEnd.setOnAction(
-            action->System.out.println("Hola")
-        ); */
     }
 
     private void events(){
@@ -114,8 +94,40 @@ public class ScheduleController extends Controller implements Initializable{
         });
     }
 
+    private void fillNotAvaible(ScheduleVo scheduleVo) {
+        AppointmentBo.getInstance()
+                .getElementsOf(
+                        scheduleVo.getAppointment().getPatient())
+                .forEach(
+                        appointment -> {
+                            ScheduleBo.getInstance().getElementsOf(appointment).forEach(
+                                    schedule -> {
+                                        if (scheduleVo.getDay().equals(schedule.getDay())) {
+                                            cbHStart.getItems().removeIf(
+                                                ac->ac.getTime() <= schedule.getTo().getTime());
+                                        }
+                                    });
+                        });
+    }
+
+    public void edit(ScheduleVo scheduleVo){
+        if(scheduleVo != null){
+            getTfDay().setText(scheduleVo.getDay().toString());
+            fillNotAvaible(scheduleVo);
+            chargeHours(scheduleVo);
+            btnSave.setOnAction(
+                action->{
+                    scheduleVo.setFrom(cbHStart.getSelectionModel().getSelectedItem());
+                    scheduleVo.setTo(cbHEnd.getSelectionModel().getSelectedItem());
+                    
+                }
+            );
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        parent = (Pane)btnSave.getParent();
         ObservableList<Time> list = FXCollections.observableArrayList();
         for (int hora : Helpers.Time.HORAS) {
             if(hora > 7 && hora < 18){
@@ -126,8 +138,12 @@ public class ScheduleController extends Controller implements Initializable{
         }
         cbHStart.setItems(list);
         events();
-        //chargeSchedule();
-        //rechargeCalendar();
+        if(this.schedule != null){
+            edit(this.schedule);
+        }else{
+            parent.getChildren().remove(tfDay);
+            parent.getChildren().remove(btnSave);
+        }
         
     }
 

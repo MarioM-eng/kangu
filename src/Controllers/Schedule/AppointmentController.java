@@ -2,6 +2,7 @@ package Controllers.Schedule;
 
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import Controllers.Controller;
@@ -69,10 +70,10 @@ public class AppointmentController extends Controller implements Initializable {
 
     private DateCalendar dateCalendar;
     private AppointmentVo appointmentVo;
-    ObservableList<ScheduleVo> unvailablePatientHours;
+    private ObservableMap<LocalDate,ScheduleVo> unvailablePatientHours;
 
     public AppointmentController(){
-        unvailablePatientHours = FXCollections.observableArrayList();
+        unvailablePatientHours = FXCollections.observableHashMap();
     }
 
     
@@ -84,10 +85,10 @@ public class AppointmentController extends Controller implements Initializable {
         this.appointmentVo = appointmentVo;
     }
 
-    public ObservableList<ScheduleVo> getUnvailablePatientHours() {
+    public ObservableMap<LocalDate,ScheduleVo> getUnvailablePatientHours() {
         return unvailablePatientHours;
     }
-    public void setUnvailablePatientHours(ObservableList<ScheduleVo> unvailablePatientHours) {
+    public void setUnvailablePatientHours(ObservableMap<LocalDate,ScheduleVo> unvailablePatientHours) {
         this.unvailablePatientHours = unvailablePatientHours;
     }
 
@@ -144,7 +145,7 @@ public class AppointmentController extends Controller implements Initializable {
             }
         }
         if(check){
-            getSchedule().chargeSchedule(schedule,null);
+            getSchedule().chargeHours(schedule);
         }
         getDateCalendar().daysSelected(list);
     }
@@ -176,6 +177,8 @@ public class AppointmentController extends Controller implements Initializable {
                 String.format("Sesiones con %s", getAppointmentVo().getUser())
                 );
             System.out.println("Cita obtenida correctamente");
+            //Carga dentro de la lista unvailablePatientHours los schedules que coinciden con el paciente
+            unavailablePatientHours();
             chargeComponents();
         }else{
             System.out.println("No se pudo obtener la cita");
@@ -197,7 +200,8 @@ public class AppointmentController extends Controller implements Initializable {
 
                     getDateCalendar().getMarkedDays().forEach(
                             (key, value) -> {
-                                getSchedule().create(appointmentVo, value);
+                                value.setAppointment(appointmentVo);
+                                getSchedule().create(value);
                             });
                     System.out.println("Proceso terminado");
 
@@ -229,17 +233,27 @@ public class AppointmentController extends Controller implements Initializable {
                 appointment->{
                     ScheduleBo.getInstance().getElementsOf(appointment).forEach(
                         schedule->{
-                            if(getDateCalendar().getMarkedDays().containsKey(schedule.getDay().toLocalDate())){
-                                if(schedule.getFrom().equals(getSchedule().getCbHStart().getSelectionModel().getSelectedItem())){
-                                    //System.out.println(schedule.getFrom());
-                                    getUnvailablePatientHours().add(schedule);
-                                    //patientSchedule.add(schedule);
-                                }
-                            }
+                            getUnvailablePatientHours().put(schedule.getDay().toLocalDate(), schedule);
+                                
                         }
                     );
                 }
             );
+    }
+
+    private boolean checkHoursNotAvailable(){
+        boolean check = false;
+        for (Map.Entry<LocalDate,ScheduleVo> entry : getDateCalendar().getMarkedDays().entrySet()){
+            if(getUnvailablePatientHours().containsKey(entry.getKey())){
+                getDateCalendar().dateCellcolor(Color.YELLOW, getDateCalendar().findDateCell(entry.getKey()));
+                check = true;
+            }else{
+                getDateCalendar().getMarkedDays().get(entry.getValue().getDay().toLocalDate()).setFrom(getSchedule().getCbHStart().getSelectionModel().getSelectedItem());
+                getDateCalendar().getMarkedDays().get(entry.getValue().getDay().toLocalDate()).setTo(getSchedule().getCbHEnd().getSelectionModel().getSelectedItem());
+            }
+        }
+    
+        return check;
     }
 
     @Override
@@ -269,26 +283,18 @@ public class AppointmentController extends Controller implements Initializable {
         setProfessional(new ProfessionalController(this));
         View.getInstance().createScene(getProfessional(), "Profesional", paneProffesional);
 
-        setSchedule(new ScheduleController(getDateCalendar()));
+        setSchedule(new ScheduleController());
         View.getInstance().createScene(this.schedule, "Horario", paneSchedule);
 
         btnSave.setOnAction(
             //action->save()
             action->{
-                //Carga dentro de la lista unvailablePatientHours los schedules que coinciden con el paciente
-                /* unavailablePatientHours();
-                    getDateCalendar().getDateCells().forEach(
-                        cell->{
-                            getUnvailablePatientHours().forEach(
-                                sche->{
-                                    if(cell.getItem().equals(sche.getDay().toLocalDate())){
-                                        
-                                        getDateCalendar().dateCellcolor(Color.YELLOW, cell);
-                                    }
-                                }
-                            );
-                        }
-                    ); */
+                
+                if(checkHoursNotAvailable()){
+                    System.out.println("No disponible");
+                }else{
+                    System.out.println("Disponible");
+                }
                     /* Alert a = new Alert(AlertType.CONFIRMATION);
                     a.setTitle("Lol");
                     a.setHeaderText(null);
