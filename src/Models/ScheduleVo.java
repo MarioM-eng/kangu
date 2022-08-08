@@ -43,5 +43,11 @@ public class ScheduleVo extends Model {
     public void setAppointment(AppointmentVo appointment) {
         this.appointment = appointment;
     }
+
+    @Override
+    public String toString() {
+        // TODO Auto-generated method stub
+        return "ID" + this.getId();
+    }
     
 }

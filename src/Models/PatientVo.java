@@ -76,6 +76,22 @@ public class PatientVo extends Person{
         this.diagnosis.set(diagnosis);
     }
 
-    
+    public void replace(PatientVo patientVo){
+        this.setId(patientVo.getId());
+        this.setDni(patientVo.getDni());
+        this.setName(patientVo.getName());
+        this.setAge(patientVo.getAge());
+        this.setDateBirth(patientVo.getDateBirth());
+        this.setSex(patientVo.getSex());
+        this.setDiagnosis(patientVo.getDiagnosis());
+        this.setCreated_at(patientVo.getCreated_at());
+        this.setUpdated_at(patientVo.getUpdated_at());
+        this.setDeleted_at(patientVo.getDeleted_at());
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new PatientVo(getId(), getName(), getDni(), getAge(), getDateBirth(), getSex(), getDiagnosis());
+    }
     
 }

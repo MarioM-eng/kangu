@@ -4,6 +4,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,14 +65,13 @@ public class ScheduleBo extends ModelBo<ScheduleVo> implements BelongsTo<Schedul
         
     }
 
-    public boolean create(ScheduleVo scheduleVo)
+    public ScheduleVo create(ScheduleVo scheduleVo)
     {
-        boolean completed = false;
         if(exist(scheduleVo)){
-            return completed;
+            return null;
         }
         //Se define la consulta que vamos a realizar
-        String query = "CALL add_schedule(?,?,?,?)";
+        String query = "CALL add_schedule(?,?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
@@ -83,12 +83,19 @@ public class ScheduleBo extends ModelBo<ScheduleVo> implements BelongsTo<Schedul
             callable.setTime(2, scheduleVo.getTo());
             callable.setDate(3, scheduleVo.getDay());
             callable.setInt(4, scheduleVo.getAppointment().getId());
+            callable.registerOutParameter(5, Types.INTEGER);
             //Ejecutamos
             if(callable.executeUpdate() != -1){
-                    System.out.println("Agenda agregada");
-                    completed = true;
+                //Buscamos al usuario agregado en la db
+                scheduleVo = findById(callable.getInt(5));
+                //Agregamos al elemento en la lista; Retorna true si se agregó exitosamente
+                if(addElement(scheduleVo)){
+                    System.out.println("Elemento agregado");
+                }else{
+                    System.out.println("No fue posible agregar el elemento a la lista");
+                }
             }else{
-                System.out.println("No fue posible registar agenda a la base de datos");
+                System.out.println("No fue posible registar elemento a la base de datos");
             }
             
         } catch (SQLException e) {
@@ -107,7 +114,7 @@ public class ScheduleBo extends ModelBo<ScheduleVo> implements BelongsTo<Schedul
                 }
             }
         }
-        return completed;
+        return scheduleVo;
     }
 
     public void update(ScheduleVo scheduleVo)
@@ -158,7 +165,8 @@ public class ScheduleBo extends ModelBo<ScheduleVo> implements BelongsTo<Schedul
 
     }
 
-    public void delete(ScheduleVo scheduleVo){
+    public boolean delete(ScheduleVo scheduleVo){
+        boolean estado = false;
         //Se define la consulta que vamos a realizar
         String query = "CALL delete_schedule(?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -172,6 +180,7 @@ public class ScheduleBo extends ModelBo<ScheduleVo> implements BelongsTo<Schedul
 
             //Ejecutamos
             if(callable.executeUpdate() != -1){
+                estado = true;
                 //Agregamos al elemento en la lista; Retorna true si se agregó exitosamente
                 if(deleteElement(scheduleVo)){
                     System.out.println("Agenda elimanada");
@@ -179,6 +188,7 @@ public class ScheduleBo extends ModelBo<ScheduleVo> implements BelongsTo<Schedul
                     System.out.println("No fue posible eliminar el elemento a la lista");
                 }
             }else{
+                estado = false;
                 System.out.println("No fue posible eliminar agenda a la base de datos");
             }
             
@@ -198,6 +208,7 @@ public class ScheduleBo extends ModelBo<ScheduleVo> implements BelongsTo<Schedul
                 }
             }
         }
+        return estado;
     }
 
     public ScheduleVo findById(int id){

@@ -71,7 +71,7 @@ public class ManyToManyBo<T,U,V,W> extends ModelBo<ManyToMany<T,U>> {
         
     }
     
-    public void create(ManyToMany<T, U> relation)
+    public boolean create(ManyToMany<T, U> relation)
     {
 
         String query = "CALL add_" + ClassHandler.classNameForRelationsToStringLower(t, u, "_") + "(?,?)";
@@ -88,13 +88,16 @@ public class ManyToManyBo<T,U,V,W> extends ModelBo<ManyToMany<T,U>> {
                 }else{
                     System.out.println("No fue posible agregar el elemento a la lista");
                 }
+                return true;
             }else{
                 System.out.println("No fue posible registar " + relation.getElement_2() + " para " + relation.getElement_1() + " a la base de datos");
+                return false;
             }
             
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al intentar agregar elemento a la base de datos: " + e.getMessage());
+            return false;
         }catch (Exception e) {
             //TODO: handle exception
             System.err.println("Error al intentar agregar elemento a la base de datos: " + e.getMessage());
@@ -108,10 +111,10 @@ public class ManyToManyBo<T,U,V,W> extends ModelBo<ManyToMany<T,U>> {
                 }
             }
         }
-
+        return false;
     }
 
-    public void delete(ManyToMany<T, U> relation){
+    public boolean delete(ManyToMany<T, U> relation){
         //Se define la consulta que vamos a realizar
         String query = "CALL delete_" + ClassHandler.classNameForRelationsToStringLower(t, u, "_") + "(?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -130,6 +133,7 @@ public class ManyToManyBo<T,U,V,W> extends ModelBo<ManyToMany<T,U>> {
                 }else{
                     System.out.println("No fue posible eliminar el elemento a la lista");
                 }
+                return true;
             }else{
                 System.out.println("No fue posible eliminar elemento de la base de datos");
             }
@@ -137,9 +141,11 @@ public class ManyToManyBo<T,U,V,W> extends ModelBo<ManyToMany<T,U>> {
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al eliminar " + relation.getElement_2() +" de "+ relation.getElement_1() + " " + e.getMessage());
+            return false;
         }catch (Exception e) {
             //TODO: handle exception
             System.err.println("Error al eliminar " + relation.getElement_2() +" de "+ relation.getElement_1() + " " + e.getMessage());
+            return false;
         } finally{
             if(callable != null){
                 try {
@@ -150,24 +156,28 @@ public class ManyToManyBo<T,U,V,W> extends ModelBo<ManyToMany<T,U>> {
                 }
             }
         }
+        return false;
     }
-
-    public ObservableList<?> makeAObject(Class<?> c, Object object){
+    /**
+     * Crea una lista con los elementos relacionados con el objeto
+     * @param object Objeto del cual se quiere buscar sus relaciones
+     * @return ObservableList
+     */
+    public ObservableList makeAObject(Object object){
         
         ListIterator<ManyToMany<T,U>> listIterator = null;
-
-        if(c.equals(t.getClass())){
-            ObservableList<T> observableList = FXCollections.observableArrayList();
-            listIterator = getElements().filtered(el->el.getElement_2() == object).listIterator();
-            while (listIterator.hasNext()) {
-                observableList.add(listIterator.next().getElement_1());
-            }
-            return observableList;
-        }else if(c.equals(u.getClass())){
+        if(object.getClass().equals(t.getClass())){
             ObservableList<U> observableList = FXCollections.observableArrayList();
-            listIterator = getElements().filtered(el->el.getElement_1() == object).listIterator();
+            listIterator = getElements().filtered(el->el.getElement_1().equals(object)).listIterator();
             while (listIterator.hasNext()) {
                 observableList.add(listIterator.next().getElement_2());
+            }
+            return observableList;
+        }else if(object.getClass().equals(u.getClass())){
+            ObservableList<T> observableList = FXCollections.observableArrayList();
+            listIterator = getElements().filtered(el->el.getElement_2().equals(object)).listIterator();
+            while (listIterator.hasNext()) {
+                observableList.add(listIterator.next().getElement_1());
             }
             return observableList;
         }

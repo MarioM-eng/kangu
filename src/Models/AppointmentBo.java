@@ -65,9 +65,9 @@ public class AppointmentBo extends ModelBo<AppointmentVo> implements HasMany<App
 
     public AppointmentVo create(AppointmentVo appointmentVo)
     {
-
-        if(exist(appointmentVo)){
-            return null;
+        int idPatient = exist(appointmentVo);
+        if(idPatient != 0){
+            return AppointmentBo.getInstance().findThroughList(idPatient);
         }
         //Se define la consulta que vamos a realizar
         String query = "CALL add_appointment(?,?,?)";
@@ -87,7 +87,7 @@ public class AppointmentBo extends ModelBo<AppointmentVo> implements HasMany<App
                 appointmentVo = findById(callable.getInt(3));
                 //Agregamos al elemento en la lista; Retorna true si se agregó exitosamente
                 if(addElement(appointmentVo)){
-                    System.out.println("Agenda elemento");
+                    System.out.println("Elemento agregado");
                 }else{
                     System.out.println("No fue posible agregar el elemento a la lista");
                 }
@@ -239,20 +239,22 @@ public class AppointmentBo extends ModelBo<AppointmentVo> implements HasMany<App
         return appointmentVo;
     }
 
-    private boolean exist(AppointmentVo appointmentVo){
+    private int exist(AppointmentVo appointmentVo){
+        int id = 0;
         for (AppointmentVo appointment : getElements()) {
             if(appointment.getPatient().getId() == appointmentVo.getPatient().getId() &&
             appointment.getUser().getId() == appointmentVo.getUser().getId()){
-                return true;
+                id = appointment.getId();
+                return id;
             }
         }
 
-        return false;
+        return id;
     }
 
     @Override
     public ObservableList<AppointmentVo> getElementsOf(Object object) {
-        if(object.equals(UserVo.class)){
+        if(object.getClass().equals(UserVo.class)){
             return getElements().filtered(
             element -> element.getUser().equals(object)
         );

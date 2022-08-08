@@ -4,7 +4,7 @@ import java.sql.Date;
 
 import javafx.beans.property.SimpleStringProperty;
 
-public abstract class Person extends ModelWithName {
+public abstract class Person extends ModelWithName implements Cloneable {
     
     private SimpleStringProperty dni;
     private Date created_at;

@@ -17,13 +17,13 @@ public abstract class PersonBo<T> extends ModelBo<T> {
     {
         ObservableList<T> resultados = FXCollections.observableArrayList();
         String ex = ".*"+ dato +".*";
-        Pattern pat = Pattern.compile(ex);
+        Pattern pat = Pattern.compile(ex.toLowerCase());
         Matcher matName = null;
         Matcher matDni = null;
         for (T t : getElements()) {
             Person person = ((Person) t);
-            matName = pat.matcher(person.getName());
-            matDni = pat.matcher(person.getDni());
+            matName = pat.matcher(person.getName().toLowerCase());
+            matDni = pat.matcher(person.getDni().toLowerCase());
             if(matName.matches() && matDni.matches()){
                 resultados.add(t);
             }else if(matName.matches() || matDni.matches()){

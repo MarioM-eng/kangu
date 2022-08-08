@@ -11,6 +11,7 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -38,7 +39,7 @@
                                           <VBox>
                                              <children>
                                                 <TextField fx:id="tfDni" prefHeight="25.0" prefWidth="149.0" />
-                                                <Label fx:id="mensajeCodLb" styleClass="label-error" text="hfghfg">
+                                                <Label fx:id="lbNoticeDni" styleClass="label-error">
                                                    <font>
                                                       <Font size="4.0" />
                                                    </font>
@@ -57,7 +58,7 @@
                                           <VBox>
                                              <children>
                                                 <TextField fx:id="tfName" />
-                                                <Label fx:id="mensajeNameLb" styleClass="label-error" text="kjkoooioi">
+                                                <Label fx:id="lbNoticeName" styleClass="label-error">
                                                    <font>
                                                       <Font size="10.0" />
                                                    </font>
@@ -70,18 +71,39 @@
                                        <children>
                                           <Label text="Nombre de usuario" />
                                           <TextField fx:id="tfUserName" />
-                                          <Label styleClass="label-error" text="asdsd">
+                                          <Label fx:id="lbNoticeUserName" styleClass="label-error">
                                              <font>
                                                 <Font size="10.0" />
                                              </font>
                                           </Label>
                                        </children>
                                     </VBox>
-                                    <VBox layoutX="183.0" layoutY="64.0" prefHeight="44.0">
+                                    <VBox layoutX="183.0" layoutY="60.0" prefHeight="44.0">
                                        <children>
                                           <Label text="Contraseña" />
-                                          <PasswordField fx:id="tfPassword" />
-                                          <Label styleClass="label-error" text="asdsd">
+                                          <HBox alignment="CENTER" spacing="5.0">
+                                             <children>
+                                                <PasswordField fx:id="tfPassword">
+                                                   <tooltip>
+                                                      <Tooltip text="Contraseña" />
+                                                   </tooltip>
+                                                </PasswordField>
+                                                <Button fx:id="btnResetPassword" disable="true" mnemonicParsing="false">
+                                                   <styleClass>
+                                                      <String fx:value="btn" />
+                                                      <String fx:value="btn-green" />
+                                                   </styleClass>
+                                                   <graphic>
+                                                      <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
+                                                         <image>
+                                                            <Image url="@../Images/white/006-refresh.png" />
+                                                         </image>
+                                                      </ImageView>
+                                                   </graphic>
+                                                </Button>
+                                             </children>
+                                          </HBox>
+                                          <Label fx:id="lbNoticePassword" styleClass="label-error">
                                              <font>
                                                 <Font size="10.0" />
                                              </font>
@@ -108,8 +130,11 @@
                                                 <String fx:value="btn-blue" />
                                                 <String fx:value="btn" />
                                              </styleClass>
+                                             <tooltip>
+                                                <Tooltip text="Agregar" />
+                                             </tooltip>
                                           </Button>
-                                          <Button id="btn-update" fx:id="btnUpdate" mnemonicParsing="false" textFill="WHITE">
+                                          <Button id="btn-update" fx:id="btnUpdate" disable="true" mnemonicParsing="false" textFill="WHITE">
                                              <graphic>
                                                 <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
@@ -127,12 +152,15 @@
                                                 <String fx:value="btn" />
                                                 <String fx:value="btn-green" />
                                              </styleClass>
+                                             <tooltip>
+                                                <Tooltip text="Actualizar" />
+                                             </tooltip>
                                           </Button>
-                                          <Button fx:id="btnCleanUp" layoutX="67.0" layoutY="11.0" mnemonicParsing="false" textFill="WHITE">
+                                          <Button fx:id="btnCleanUp" disable="true" layoutX="67.0" layoutY="11.0" mnemonicParsing="false" textFill="WHITE">
                                              <graphic>
                                                 <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
-                                                      <Image url="@../Images/white/006-refresh.png" />
+                                                      <Image url="@../Images/white/broom.png" />
                                                    </image>
                                                 </ImageView>
                                              </graphic>
@@ -143,6 +171,9 @@
                                                 <String fx:value="btn" />
                                                 <String fx:value="btn-red" />
                                              </styleClass>
+                                             <tooltip>
+                                                <Tooltip text="Limpiar campos" />
+                                             </tooltip>
                                           </Button>
                                        </children>
                                     </HBox>
@@ -211,6 +242,9 @@
                                     <String fx:value="btn" />
                                     <String fx:value="btn-gray" />
                                  </styleClass>
+                                 <tooltip>
+                                    <Tooltip text="Traer todo" />
+                                 </tooltip>
                               </Button>
                               <Button fx:id="btnDelete" layoutX="169.0" layoutY="10.0" mnemonicParsing="false">
                                  <cursor>
@@ -227,12 +261,15 @@
                                     <String fx:value="btn-red" />
                                     <String fx:value="btn" />
                                  </styleClass>
+                                 <tooltip>
+                                    <Tooltip text="Eliminar" />
+                                 </tooltip>
                               </Button>
                               <Button fx:id="btnRecovery" mnemonicParsing="false" textFill="WHITE">
                                  <graphic>
                                     <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../Images/white/006-refresh.png" />
+                                          <Image url="@../Images/white/backup.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -240,15 +277,18 @@
                                     <Cursor fx:constant="DEFAULT" />
                                  </cursor>
                                  <styleClass>
-                                    <String fx:value="btn-yellow" />
+                                    <String fx:value="btn-green" />
                                     <String fx:value="btn" />
                                  </styleClass>
+                                 <tooltip>
+                                    <Tooltip text="Recuperar" />
+                                 </tooltip>
                               </Button>
                               <Button fx:id="btnPaperBin" layoutX="393.0" layoutY="10.0" mnemonicParsing="false" textFill="WHITE">
                                  <graphic>
                                     <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../Images/white/006-refresh.png" />
+                                          <Image url="@../Images/white/paper-bin.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -259,17 +299,13 @@
                                     <String fx:value="btn-yellow" />
                                     <String fx:value="btn" />
                                  </styleClass>
+                                 <tooltip>
+                                    <Tooltip text="Papelera" />
+                                 </tooltip>
                               </Button>
                            </children>
                         </HBox>
-                        <ScrollPane style="-fx-border-color: transparent;">
-                           <content>
-                              <TableView fx:id="tblElements" prefHeight="250.0" />
-                           </content>
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </ScrollPane>
+                        <TableView fx:id="tblElements" prefHeight="250.0" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

@@ -54,7 +54,7 @@ public abstract class ModelBo<T> {
                 if(((Model) elementVo).getId() == ((Model) element).getId()){
                     deleteElement(elementVo);
                     addElement(element);
-                    break;
+                    return true;
                 }
             }
         }
@@ -128,7 +128,7 @@ public abstract class ModelBo<T> {
 
 
     /**
-     * Elimina un elemento
+     * Verifica si un elemento es encontrado
      * @param element
      */
     protected boolean isFound(T element) {

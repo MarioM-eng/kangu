@@ -10,7 +10,7 @@ import java.util.List;
 
 import Conexion.Conexion;
 
-public class UserBo extends PersonBo<UserVo>{
+public class UserBo extends PersonBo<UserVo> {
     
     private static UserBo singleton = new UserBo();
 
@@ -22,11 +22,7 @@ public class UserBo extends PersonBo<UserVo>{
     public static UserBo getInstance(){
         return singleton;
     }
-
     // ********************************************
-
-
-
     /**
      * Método para logear a un usuario
      */
@@ -113,11 +109,9 @@ public class UserBo extends PersonBo<UserVo>{
 
     public UserVo create(UserVo userVo)
     {
-        
         if(checkPerson(userVo)){
             return null;
         }
-
         //Se define la consulta que vamos a realizar
         String query = "CALL add_user(?,?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -143,9 +137,8 @@ public class UserBo extends PersonBo<UserVo>{
                     System.out.println("No fue posible agregar el elemento a la lista");
                 }
             }else{
-                System.out.println("No fue posible registar usuario a la base de datos");
-            }
-            
+                System.out.println("No fue posible registar usuario en la base de datos");
+            }            
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al traer usuario: " + e.getMessage());
@@ -165,9 +158,8 @@ public class UserBo extends PersonBo<UserVo>{
         return userVo;
     }
 
-    public void update(UserVo userVo)
+    public boolean update(UserVo userVo)
     {
-        
         //Se define la consulta que vamos a realizar
         String query = "CALL update_user(?,?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -182,34 +174,31 @@ public class UserBo extends PersonBo<UserVo>{
             callable.setString(3, userVo.getDni());
             callable.setString(4, userVo.getUsername());
             callable.setString(5, userVo.getPassword());
-
             //Ejecutamos
-            callable.executeUpdate();
-            System.out.println("Usuario actualizado");
-            //Utilizar hilos aquí
-            //Actualizamos la lista de usuarios almacenada en memoria
-            updateElement(userVo);
+            if(callable.executeUpdate() != -1){
+                findThroughList(userVo.getId()).replace(userVo);
+                return true;
+            }
             
         } catch (SQLException e) {
-            //TODO: handle exception
             System.err.println("Error al actualizar usuario: " + e.getMessage());
+            return false;
         }catch (Exception e) {
-            //TODO: handle exception
             System.err.println("Error al actualizar usuario: " + e.getMessage());
+            return false;
         } finally{
             if(callable != null){
                 try {
                     callable.close();
                 } catch (SQLException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }
         }
-
+        return false;
     }
 
-    public void softDelete(UserVo userVo){
+    public boolean softDelete(UserVo userVo){
         //Se define la consulta que vamos a realizar
         String query = "CALL soft_delete_person(?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -221,21 +210,20 @@ public class UserBo extends PersonBo<UserVo>{
             //Setea los parametros designados en los ?
             callable.setInt(1, userVo.getId());
             callable.registerOutParameter(2, Types.DATE);
-
             //Ejecutamos
-            callable.executeUpdate();
-            //Utilizar hilos aquí
-            //Actualizamos la lista de personas almacenada en memoria
-            userVo.setDeleted_at(callable.getDate(2));
-            updateElement(userVo);
-            System.out.println("Usuario eliminado");
+            if(callable.executeUpdate() != -1){
+                userVo.setDeleted_at(callable.getDate(2));
+                return true;
+            }
             
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al eliminar usuario: " + e.getMessage());
+            return false;
         }catch (Exception e) {
             //TODO: handle exception
             System.err.println("Error al eliminar usuario: " + e.getMessage());
+            return false;
         } finally{
             if(callable != null){
                 try {
@@ -246,9 +234,15 @@ public class UserBo extends PersonBo<UserVo>{
                 }
             }
         }
+        return false;
     }
 
-    public void recovery(UserVo userVo){
+    /**
+     * Recupera un elemento de la lista (Modifica el campo deleted_at)
+     * La diferencia con Update es que este no modifica el campo udated_at
+     * @param userVo
+     */
+    public boolean recovery(UserVo userVo){
         //Se define la consulta que vamos a realizar
         String query = "CALL recovery_person(?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -261,18 +255,22 @@ public class UserBo extends PersonBo<UserVo>{
             callable.setInt(1, userVo.getId());
 
             //Ejecutamos
-            callable.executeUpdate();
-            System.out.println("Usuario recuperado");
-            //Utilizar hilos aquí
-            //Actualizamos la lista de personas almacenada en memoria
-            updateElement(userVo);
+            if(callable.executeUpdate() != -1){
+                //Recuperamos el elemento en la lista vaciando la variable deleted_at
+                userVo.setDeleted_at(null);
+                return true;
+            }else{
+                System.out.println("No fue posible recuperar usuario en la base de datos");
+            }
             
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al recuperar usuario: " + e.getMessage());
+            return false;
         }catch (Exception e) {
             //TODO: handle exception
             System.err.println("Error al recuperar usuario: " + e.getMessage());
+            return false;
         } finally{
             if(callable != null){
                 try {
@@ -283,6 +281,7 @@ public class UserBo extends PersonBo<UserVo>{
                 }
             }
         }
+        return false;
     }
 
     public boolean checkUserName(String userName){

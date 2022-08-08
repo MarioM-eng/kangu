@@ -1,10 +1,13 @@
 package Helpers.Validate;
 
-import javafx.collections.ObservableList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javafx.event.EventHandler;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyEvent;
 
-public class Range implements IStyle {
+public class Range {
 
     /**
      * Valida dependiendo del número de caracteres a recibir el vampo de texto
@@ -13,100 +16,32 @@ public class Range implements IStyle {
      * @param max Entero de número de caracteres máximo
      * @param min Entero de número de caracteres mínimo
      */
-    public void range(FieldValidation field, int max, int min){
-        /*IValidate iValidate = (f)->{
-            return f.getTF() == null;
-        };*/
+    public static void max(TextInputControl field, int max){
         EventHandler<KeyEvent> manejadorTeclado = (KeyEvent event)->{
-            //if(!iValidate.isEmpty(field)){
-                ObservableList<String> styleClass = field.getTF().getStyleClass();
-                ObservableList<String> lbStyleClass = field.getLb().getStyleClass();
-                int characterNumber = field.getTF().getText().length();
-                if(characterNumber > max || characterNumber < min){
-                    field.getLb().setText("Solo se aceptan de " + 
-                                            min + " a " + max +" carácteres");
-                    error(styleClass, lbStyleClass);
-
-                }else{
-                    good(styleClass, lbStyleClass);
-                    field.getLb().setText("Muy bien");
+                int characterNumber = field.getText().length();
+                if(characterNumber > max-1){
+                    event.consume();
                 }
-            //}
         };
         
-        field.getTF().addEventHandler(KeyEvent.KEY_RELEASED, manejadorTeclado);
+        field.addEventHandler(KeyEvent.KEY_TYPED, manejadorTeclado);
     }
 
-    private void errorLb(ObservableList<String> styleClass)
-    {
-        if(!styleClass.contains(LABEL_RED)) {
-            if(styleClass.contains(LABEL_GREEN)){
-                styleClass.remove(LABEL_GREEN);
-                styleClass.add(LABEL_RED);
-            }else{
-                styleClass.add(LABEL_RED);
+    public static boolean min(FieldValidation field, int min){
+        Pattern mini = Pattern.compile("^().{" + min + ",}$");
+        Matcher mat = mini.matcher(field.getTF().getText());
+            if(!mat.matches()){
+                field.getLb().setText("Mínimo " + min + " caracteres");
+                field.getTF().setOnKeyTyped(
+                    event->{
+                        if(field.getTF().getText().length() >= min){
+                            field.getLb().setText("");
+                        }
+                    }
+                );
+                return false;
             }
-        }
-    }
-
-    private void exLb(ObservableList<String> styleClass)
-    {
-        if(!styleClass.contains(LABEL_GREEN)) {
-            if(styleClass.contains(LABEL_RED)){
-                styleClass.remove(LABEL_RED);
-                styleClass.add(LABEL_GREEN);
-            }else{
-                styleClass.add(LABEL_GREEN);
-            }
-        }
-    }
-    
-    private void errorTF(ObservableList<String> styleClass)
-    {
-        //Si no contiene el borde de error
-        if(!styleClass.contains(BORDER_ERROR)) {
-            //si contiene el borde bien
-            if(styleClass.contains(BORDER_GOOD)){
-                //quitar el borde bien
-                styleClass.remove(BORDER_GOOD);
-                //y agregar el borde de error
-                styleClass.add(BORDER_ERROR);
-            }else{//si no
-                //simplemente agregar el borde de error
-                styleClass.add(BORDER_ERROR);
-            }
-        }
-    }
-
-    private void exTF(ObservableList<String> styleClass)
-    {
-        //Si no contiene el borde de error
-        if(!styleClass.contains(BORDER_ERROR)) {
-            //si contiene el borde bien
-            if(styleClass.contains(BORDER_GOOD)){
-                //quitar el borde bien
-                styleClass.remove(BORDER_GOOD);
-                //y agregar el borde de error
-                styleClass.add(BORDER_ERROR);
-            }else{//si no
-                //simplemente agregar el borde de error
-                styleClass.add(BORDER_ERROR);
-            }
-        }
-    }
-
-    @Override
-    public void error(ObservableList<String> textFieldStyleCLass, ObservableList<String> labelStyleCLass) {
-        errorTF(textFieldStyleCLass);
-        errorLb(labelStyleCLass);
-        
-    }
-
-    @Override
-    public void good(ObservableList<String> textFieldStyleCLass, ObservableList<String> labelStyleCLass) {
-        exTF(textFieldStyleCLass);
-        exLb(labelStyleCLass);
-        
+        return true;
     }
     
 }

@@ -91,6 +91,51 @@ public class UserVo extends Person{
         this.deleted_at.set(deleted_at);
     }
 
-    
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new UserVo(
+            getId(), getName(), 
+            getDni(), getUsername(), 
+            getPassword(), getCreated_at(), 
+            getCreated_at(), getDeleted_at());
+    }
+
+    public void replace(UserVo userVo){
+        this.setId(userVo.getId());
+        this.setDni(userVo.getDni());
+        this.setName(userVo.getName());
+        this.setUsername(userVo.getUsername());
+        this.setPassword(userVo.getPassword());
+        this.setCreated_at(userVo.getCreated_at());
+        this.setUpdated_at(userVo.getUpdated_at());
+        this.setDeleted_at(userVo.getDeleted_at());
+    }
+
+    public void combine(UserVo userVo){
+        if(userVo.getId() != 0){
+            this.setId(userVo.getId());
+        }
+        if(!userVo.getDni().equals(null)){
+            this.setDni(userVo.getDni());
+        }
+        if(!userVo.getName().equals(null)){
+            this.setName(userVo.getName());
+        }
+        if(!userVo.getUsername().equals(null)){
+            this.setUsername(userVo.getUsername());
+        }
+        if(!userVo.getPassword().equals(null)){
+            this.setPassword(userVo.getPassword());
+        }
+        if(!userVo.getCreated_at().equals(null)){
+            this.setCreated_at(userVo.getCreated_at());
+        }
+        if(!userVo.getUpdated_at().equals(null)){
+            this.setUpdated_at(userVo.getUpdated_at());
+        }
+        if(!userVo.getDeleted_at().equals(null)){
+            this.setDeleted_at(userVo.getDeleted_at());
+        }
+    }
     
 }

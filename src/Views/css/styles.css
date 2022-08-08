@@ -1,6 +1,18 @@
 .backGround{
     -fx-background-color: #ffffff;
 }
+.backGround-gray{
+    -fx-background-color: #787878;
+}
+.backGround-green{
+    -fx-background-color: #378d4c;
+}
+.backGround-blue{
+    -fx-background-color: #0d6efd;
+}
+.backGround-red{
+    -fx-background-color: #c5111d;
+}
 /* LABEL */
 .label {
     -fx-font-family: "Berlin Sans FB";
@@ -26,6 +38,10 @@
     -fx-text-fill: #198754;
     -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
+.label-little {
+    -fx-font-family: "Berlin Sans FB";
+    -fx-font-size: 12px;
+}
 
 .border-error{
     -fx-border-color: #c5111d;
@@ -33,18 +49,33 @@
 .border-good{
     -fx-border-color: #198754;
 }
+.border-gray{
+    -fx-border-color: #787878;
+}
 
 .green-color-text{
     -fx-text-fill: #198754;
 }
 
-.red-color-text{
+.text-color-red{
     -fx-text-fill: #c5111d;
+}
+.text-color-white{
+    -fx-text-fill: #ffffff;
+}
+.text-color-gray{
+    -fx-text-fill: #787878;
+}
+.text-color-blue{
+    -fx-text-fill: #0d6efd;
 }
 
 /* Botones */
 .btn{
+    -fx-font-family: "Berlin Sans FB Demi";
+    -fx-font-weight: bold;
     -fx-cursor: hand;
+    -fx-font-size: 14px;
 }
 .btn-group .btn{
     -fx-pref-width: 122;
@@ -53,12 +84,11 @@
 .btn-large{
     -fx-padding:5 50 5 50;
 }
-
+.btn-aux{
+    -fx-pref-width: 130px;
+}
 .btn-red{
     -fx-text-fill: white;
-    -fx-font-family: "Berlin Sans FB Demi";
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
     -fx-background-color: #c5111d;
     -fx-border-color: #c5111d;
 }
@@ -70,9 +100,6 @@
 
 .btn-blue{
     -fx-text-fill: white;
-    -fx-font-family: "Berlin Sans FB Demi";
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
     -fx-background-color: #0d6efd;
     -fx-border-color: #0d6efd;
 }
@@ -82,11 +109,19 @@
     -fx-border-color: #0b5ed7;
 }
 
+.btn-white{
+    -fx-text-fill: black;
+    -fx-background-color: #ffffff;
+    -fx-border-color: #ffffff;
+}
+
+.btn-white:hover{
+    -fx-background-color: #787878;
+    -fx-border-color: #787878;
+}
+
 .btn-yellow{
     -fx-text-fill: white;
-    -fx-font-family: "Berlin Sans FB Demi";
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
     -fx-background-color: #ffc107;
     -fx-border-color: #ffc107;
 }
@@ -101,9 +136,6 @@
 
 .btn-green{
     -fx-text-fill: white;
-    -fx-font-family: "Berlin Sans FB Demi";
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
     -fx-background-color: #198754;
     -fx-border-color: #198754;
 }
@@ -114,9 +146,6 @@
 
 .btn-gray{
     -fx-text-fill: white;
-    -fx-font-family: "Berlin Sans FB Demi";
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
     -fx-background-color: #6c757d;
     -fx-border-color: #6c757d;
 }
@@ -131,4 +160,7 @@
 }
 .border-green{
     -fx-border-color: #198754;
+}
+.border-white{
+    -fx-border-color: #ffffff;
 }

@@ -28,5 +28,16 @@ public class ManyToMany<T,U> {
     public Object makeString(Object object){
         return object;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        ManyToMany<T,U> relation = (ManyToMany<T,U>) obj;
+        if(relation.getElement_1().equals(this.getElement_1())){
+            if(relation.getElement_2().equals(this.getElement_2())){
+                return true;
+            }
+        }
+        return false;
+    }
     
 }

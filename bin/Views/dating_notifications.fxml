@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+
+<BorderPane stylesheets="@css/styles.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+   <top>
+      <HBox alignment="CENTER" styleClass="backGround-red" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="lbDay" styleClass="text-color-white" text="Lunes, 3 de marzo de 2022" />
+         </children>
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+   </top>
+   <center>
+      <GridPane gridLinesVisible="true" prefHeight="70.0" prefWidth="300.0" styleClass="backGround">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <VBox>
+               <children>
+                  <Label styleClass="text-color-gray" text="Profesional" />
+                  <Label fx:id="lbProfessional" layoutX="10.0" layoutY="10.0" text="Label" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+            <VBox layoutX="10.0" layoutY="10.0" GridPane.columnIndex="1">
+               <children>
+                  <Label styleClass="text-color-gray" text="Paciente" />
+                  <Label fx:id="lbPatient" layoutX="10.0" layoutY="10.0" text="Label" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </VBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0" GridPane.rowIndex="1">
+               <children>
+                  <Label styleClass="text-color-gray" text="Desde:" />
+                  <Label fx:id="lbFrom" text="Label" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+               <children>
+                  <Label styleClass="text-color-gray" text="Hasta:" />
+                  <Label fx:id="lbTo" text="Label" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </HBox>
+         </children>
+      </GridPane>
+   </center>
+   <padding>
+      <Insets bottom="5.0" top="5.0" />
+   </padding>
+</BorderPane>

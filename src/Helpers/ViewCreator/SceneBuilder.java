@@ -7,10 +7,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
-public class SceneBuilder implements ISceneBuilder {
+public class SceneBuilder implements IBuilder {
 
-    private static SceneBuilder singleton = new SceneBuilder();
-    FXMLLoader fxmlLoader;
+    private FXMLLoader fxmlLoader;
+    private Scene scene;
 
     public SceneBuilder(){
         fxmlLoader  = new FXMLLoader();
@@ -26,8 +26,7 @@ public class SceneBuilder implements ISceneBuilder {
         return this;
     }
 
-    public Scene build(){
-        Scene scene = null;
+    public void build(){
         Parent root = null;
         try {
             root = fxmlLoader.load();
@@ -35,8 +34,25 @@ public class SceneBuilder implements ISceneBuilder {
             // TODO Auto-generated catch block
             System.out.println("Error al asignar el root node" + e.getMessage());
         }
-        scene = new Scene(root);
+        setScene(new Scene(root));
+    }
+
+    public FXMLLoader getFxmlLoader() {
+        return fxmlLoader;
+    }
+
+    public void setFxmlLoader(FXMLLoader fxmlLoader) {
+        this.fxmlLoader = fxmlLoader;
+    }
+
+    public Scene getScene() {
         return scene;
     }
+
+    public void setScene(Scene scene) {
+        this.scene = scene;
+    }
+
+    
     
 }

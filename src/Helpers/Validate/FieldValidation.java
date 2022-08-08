@@ -2,15 +2,21 @@ package Helpers.Validate;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputControl;
 
 public class FieldValidation {
 
-    private TextField tF;
+    private TextInputControl tF;
     private Label lb;
 
     public FieldValidation(){}
 
-    public FieldValidation withTf(TextField tF){
+    public FieldValidation(TextInputControl tF, Label lb){
+        this.tF = tF;
+        this.lb = lb;
+    }
+
+    public FieldValidation withTf(TextInputControl tF){
         this.tF = tF;
         return this;
     }
@@ -20,11 +26,11 @@ public class FieldValidation {
         return this;
     }
 
-    public TextField getTF() {
+    public TextInputControl getTF() {
         return tF;
     }
 
-    public void setTF(TextField tF) {
+    public void setTF(TextInputControl tF) {
         this.tF = tF;
     }
 

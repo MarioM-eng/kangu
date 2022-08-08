@@ -11,7 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class WindowBuild implements IBuilder{
+public class WindowBuild implements IWindowBuilder, IBuilder{
 
     private final static WindowBuild singleton = new WindowBuild();
     private Window window;
@@ -66,19 +66,15 @@ public class WindowBuild implements IBuilder{
     }
 
     @Override
-    public Window build() {
+    public void build() {
         if(validateStage()){
             this.window.getStage().setScene(this.window.getScene());
-            //this.window.getStage().getScene().setUserData(this.window.getObject());
             this.window.getStage().getIcons().add(this.window.getLogo());
             this.window.getStage().setTitle(this.window.getTitle());
             this.window.getStage().centerOnScreen();
         }else{
             System.out.println("Sin Stage");
         }
-        
-        return window;
-        // TODO Auto-generated method stub
         
     }
 

@@ -4,7 +4,15 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.ResourceBundle;
 
+import Controllers.Schedules.SchedulesController;
+import Helpers.HelperENCRYPT;
 import Helpers.ViewsPath;
+import Helpers.Alert.AlertImplement;
+import Helpers.Facades.IAlert;
+import Helpers.Facades.View;
+import Helpers.Validate.Charact;
+import Helpers.Validate.FieldValidation;
+import Helpers.Validate.Range;
 import Helpers.ViewCreator.SceneBuilder;
 import Helpers.ViewCreator.WindowBuild;
 import Models.UserBo;
@@ -15,24 +23,23 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 
 public class UserController implements Initializable {
 
-    @FXML
-    private TextField tfDni;
-    @FXML
-    private TextField tfName;
-    @FXML
-    private TextField tfUserName;
-    @FXML
-    private TextField tfPassword;
-    @FXML
-    private TextField tfSearch;
+    @FXML private TextField tfDni;
+    @FXML private Label lbNoticeDni;
+    @FXML private TextField tfName;
+    @FXML private Label lbNoticeName;
+    @FXML private TextField tfUserName;
+    @FXML private Label lbNoticeUserName;
+    @FXML private TextField tfPassword;
+    @FXML private Label lbNoticePassword;
+    @FXML private TextField tfSearch;
 
 
     @FXML
@@ -53,6 +60,8 @@ public class UserController implements Initializable {
     private Button btnPaperBin;
     @FXML
     private Button btnCleanUp;
+    @FXML
+    private Button btnResetPassword;
 
     @FXML
     private Node lSubmenu;
@@ -61,15 +70,16 @@ public class UserController implements Initializable {
     private TableView<UserVo> tblElements;
 
     private WindowBuild windowBuild;
+    private UserVo user;
+    private AlertImplement alert;
 
     private void profiles(ActionEvent actionEvent){
-        UserVo UserVo = tblElements.getSelectionModel().getSelectedItem();
         String title = "Perfiles";
         URL ruta = ViewsPath.getInstance().getViewsPath().get(title);
-        ProfileController controller = new ProfileController(UserVo);
+        ProfileUserController controller = new ProfileUserController(getUser());
         SceneBuilder sb = new SceneBuilder();
-        sb.withPath(ruta).withController(controller);
-        Scene scene = sb.build();
+        sb.withPath(ruta).withController(controller).build();
+        Scene scene = sb.getScene();
         if(windowBuild == null){
             windowBuild = WindowBuild.getNewInstance();
             String logo = "Images/logo.jpeg";
@@ -79,7 +89,13 @@ public class UserController implements Initializable {
         windowBuild.show();
     }
 
-    private void cleanUpField(ActionEvent actionEvent){
+    private void appointments(ActionEvent actionEvent){
+        SchedulesController schedules = new SchedulesController();
+        schedules.getParams().put("proffessional", getUser());
+        View.getInstance().createModal(schedules, "Horarios");
+    }
+
+    private void cleanUpField(){
 
         tfDni.setText("");
         tfName.setText("");
@@ -103,54 +119,101 @@ public class UserController implements Initializable {
         tblElements.setItems(UserBo.getInstance().getElements().filtered(
             element->element.getDeleted_at()==null));
     }
+    
+    private void resetPassword(ActionEvent actionEvent){
+        alert.alert("¿Está seguro que desea reestablecer la contraseña del usuario " + getUser().getName(), IAlert.CONFIRMATION);
+        if(alert.getResponse()){
+            UserVo userVo = null;
+            try {
+                userVo = (UserVo)getUser().clone();
+                String clave = HelperENCRYPT.Encriptar(userVo.getDni());
+                userVo.setPassword(clave);
+                if(UserBo.getInstance().update(userVo)){
+                    tfPassword.setText(userVo.getDni());
+                    tblElements.refresh();
+                    alert.alert("Se reestableció la contraseña con éxito", IAlert.SIMPLE);
+                }else{
+                    alert.alert("Error al tratar de reestablecer la contraseña", IAlert.ERROR);
+                }
+            } catch (CloneNotSupportedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
 
-    private void update(ActionEvent actionEvent){
-
-        UserVo userVo = tblElements.getSelectionModel().getSelectedItem();
-        userVo.setDni(tfDni.getText());
-        userVo.setName(tfName.getText());
-        userVo.setUsername(tfUserName.getText());
-        userVo.setPassword(tfPassword.getText());
-
-        UserBo.getInstance().update(userVo);
-        tblElements.refresh();
-
+    private boolean update(ActionEvent actionEvent){
+        if(!validateField()){return false;}
+        UserVo userVo = null;
+        try {
+            userVo = (UserVo)getUser().clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        if(getUser().getDni().equals(tfDni.getText())
+            && getUser().getName().equals(tfName.getText()) 
+            && getUser().getUsername().equals(tfUserName.getText())){
+                alert.alert("Para actualizar debe cambiar al menos un campo", IAlert.SIMPLE);
+        }else{
+            userVo.setDni(tfDni.getText());
+            userVo.setName(tfName.getText());
+            userVo.setUsername(tfUserName.getText());
+            userVo.setPassword(tfPassword.getText());
+            if(UserBo.getInstance().update(userVo)){
+                tblElements.refresh();
+                alert.alert("Usurio actualizado con éxito", IAlert.SIMPLE);
+            }else{
+                alert.alert("No se pudo actualizar usuario", IAlert.ERROR);
+            }
+        }
+        return true;
     }
 
     private void delete(ActionEvent actionEvent){
-
-        UserVo userVo = tblElements.getSelectionModel().getSelectedItem();
-        UserBo.getInstance().softDelete(userVo);
+        if(UserBo.getInstance().softDelete(getUser())){
+            alert.alert("Se eliminó el usuario " + getUser().getName(), IAlert.SIMPLE);
+            fillTable();
+            cleanUpField();
+        }else{
+            alert.alert("Error al tratar de eliminar usuario", IAlert.ERROR);
+        }
     }
 
     private void recovery(ActionEvent actionEvent){
-
-        UserVo userVo = tblElements.getSelectionModel().getSelectedItem();
-        UserBo.getInstance().recovery(userVo);
-
+        if(UserBo.getInstance().recovery(getUser())){
+            alert.alert("Se recuperó a usuario " + getUser().getName(), IAlert.SIMPLE);
+            fillTable();
+            cleanUpField();
+        }else{
+            alert.alert("Error al tratar de recuperar usuario", IAlert.ERROR);
+        }
     }
 
     private void add(ActionEvent actionEvent){
-        
-        UserVo userVo = new UserVo();
-        userVo.setDni(tfDni.getText());
-        userVo.setName(tfName.getText());
-        userVo.setUsername(tfUserName.getText());
-        userVo.setPassword(tfDni.getText());
-        
-        if(!UserBo.getInstance().checkUserName(tfUserName.getText())){
-            userVo = UserBo.getInstance().create(userVo);
+        if(validateField()){
+            UserVo userVo = new UserVo();
+            userVo.setDni(tfDni.getText());
+            userVo.setName(tfName.getText());
+            userVo.setUsername(tfUserName.getText());
+            userVo.setPassword(tfDni.getText());
+            if(!UserBo.getInstance().checkUserName(tfUserName.getText())){
+                userVo = UserBo.getInstance().create(userVo);
 
-            if(userVo == null){
-                System.out.println("El DNI " + tfDni.getText() + " ya existe");
+                if(userVo == null){
+                    alert.alert("El DNI " + tfDni.getText() + " ya existe", IAlert.ERROR);
+                }else{
+                    alert.alert("Usuario agregado con éxito", IAlert.SIMPLE);
+                }
+            }else{
+                alert.alert("El nombre de usuario ya existe", IAlert.ERROR);
             }
-        }else{
-            System.out.println("El nombre de usuario ya existe");
+        } else{
+            alert.alert("Verifique los campos", IAlert.ERROR);
         }
 
     }
 
-    private void fillTable(TableView<UserVo> tblElements){
+    private void tableColumn(){
 
         TableColumn<UserVo,String> tColumnDni = new TableColumn<>("DNI");
         tColumnDni.setMaxWidth(5000);
@@ -170,18 +233,19 @@ public class UserController implements Initializable {
         tblElements.getColumns().addAll(Arrays.asList(tColumnDni,tColumnName,tColumnUserName));
     }
 
-    private void loadElementInForm(){
-        
-        tblElements.getSelectionModel().selectedItemProperty().addListener(e->{
-            UserVo userVo = tblElements.getSelectionModel().getSelectedItem();
-            if(userVo != null){
-                tfDni.setText(userVo.getDni());
-                tfName.setText(userVo.getName());
-                tfUserName.setText(userVo.getUsername());
-                tfPassword.setText(userVo.getPassword());
-                lSubmenu.setDisable(false);
-            }         
-        });
+    private void fillTable(){
+        tblElements.setItems(UserBo.getInstance().getElements().filtered(
+            element->element.getDeleted_at()==null));
+    }
+
+    private void loadElementInForm() {
+        if (getUser() != null) {
+            tfDni.setText(getUser().getDni());
+            tfName.setText(getUser().getName());
+            tfUserName.setText(getUser().getUsername());
+            tfPassword.setText(getUser().getPassword());
+            lSubmenu.setDisable(false);
+        }
     }
 
     private void eventSearch(){
@@ -195,43 +259,77 @@ public class UserController implements Initializable {
 
     private void events(){
         tfName.setOnKeyTyped(event->{
-            tfUserName.setText(tfName.getText() + "_kangu");
+            String name = null;
+            if(tfName.getText().contains(" ")){
+                name = tfName.getText().substring(0, tfName.getText().indexOf(" "));
+            }else{
+                name = tfName.getText();
+            }
+            tfUserName.setText(name + "_kangu");
         });
+
+        tblElements.getSelectionModel().selectedItemProperty().addListener(
+            listener->{
+                this.user = tblElements.getSelectionModel().getSelectedItem();
+                loadElementInForm();
+                if(this.user != null){
+                    btnResetPassword.setDisable(false);
+                    btnUpdate.setDisable(false);
+                    btnCleanUp.setDisable(false);
+                }else{
+                    btnResetPassword.setDisable(true);
+                    btnUpdate.setDisable(true);
+                    btnCleanUp.setDisable(true);
+                }
+            }
+        );
     }
+
+    private boolean validateField(){
+        boolean result = true;
+        if(Charact.isEmpty(new FieldValidation(tfDni,lbNoticeDni))){result = false;}
+        if(!Range.min(new FieldValidation(tfDni,lbNoticeDni),10)){result = false;}
+        if(Charact.isEmpty(new FieldValidation(tfName,lbNoticeName))){result = false;}
+        if(!Range.min(new FieldValidation(tfName,lbNoticeName),2)){result = false;}
+        if(Charact.isEmpty(new FieldValidation(tfUserName,lbNoticeUserName))){result = false;}
+        if(!Range.min(new FieldValidation(tfUserName,lbNoticeUserName),7)){result = false;}
+        if(Charact.isEmpty(new FieldValidation(tfPassword,lbNoticePassword))){result = false;}
+        return result;
+    }
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        
+        alert = new AlertImplement();
         tfPassword.setEditable(false);
-        fillTable(tblElements);
-        loadElementInForm();
-        btnAdd.setOnAction(actionEvent->{
-            add(actionEvent);
-        });
-        btnCleanUp.setOnAction(actionEvent->{
-            cleanUpField(actionEvent);
-        });
-        btnProfiles.setOnAction(actionEvent->{
-            profiles(actionEvent);
-        });
-        btnUpdate.setOnAction(actionEvent->{
-            update(actionEvent);
-        });
-        btnDelete.setOnAction(actionEvent->{
-            delete(actionEvent);
-        });
-        btnRecovery.setOnAction(actionEvent->{
-            recovery(actionEvent);
-        });
-        btnPaperBin.setOnAction(actionEvent->{
-            paperBin(actionEvent);
-        });
-        btnAll.setOnAction(actionEvent->{
-            all(actionEvent);
-        });
+        tableColumn();
+        fillTable();
+        btnAdd.setOnAction(actionEvent->add(actionEvent));
+        btnCleanUp.setOnAction(actionEvent->cleanUpField());
+        btnProfiles.setOnAction(actionEvent->profiles(actionEvent));
+        btnUpdate.setOnAction(actionEvent->update(actionEvent));
+        btnDelete.setOnAction(actionEvent->delete(actionEvent));
+        btnRecovery.setOnAction(actionEvent->recovery(actionEvent));
+        btnPaperBin.setOnAction(actionEvent->paperBin(actionEvent));
+        btnAll.setOnAction(actionEvent->all(actionEvent));
+        btnResetPassword.setOnAction(actionEvent->resetPassword(actionEvent));
 
         eventSearch();
         events();
+
+        Charact.numeros(new FieldValidation().withTf(tfDni));
+        Range.max(tfDni, 10);
         
+        Charact.letterWithSpace(new FieldValidation().withTf(tfName));
+        Range.max(tfName, 50);
+
+        Charact.letter(new FieldValidation().withTf(tfUserName));
+        Range.max(tfUserName, 30);
+        
+        Range.max(tfSearch, 50);
+    }
+
+    public UserVo getUser() {
+        return user;
     }
     
 }

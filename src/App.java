@@ -1,12 +1,9 @@
 import java.net.URL;
 
-import Controllers.ProfessionalController;
-import Controllers.Schedule.AppointmentController;
 import Helpers.ViewsPath;
 import Helpers.Facades.View;
 import Helpers.ViewCreator.SceneBuilder;
 import Helpers.ViewCreator.WindowBuild;
-import Models.PatientBo;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -20,10 +17,12 @@ public class App extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        //Para el buen funcionamiento de la ventana principal, la agregamos al creador de ventanas
+        WindowBuild.getInstance().withStage(primaryStage);
         //login(primaryStage);
-        AppointmentController controller = new AppointmentController();
-        controller.getParams().put("patient", PatientBo.getInstance().findThroughList(8));
-        View.getInstance().createModal(controller, "Agenda");
+        
+        //View.getInstance().createModal(controller, "Agendas");
+        View.getInstance().create("Kangu");
         
         /* String logo = "Images/logo.jpeg";
         String title = "Profesional";
@@ -40,7 +39,9 @@ public class App extends Application{
         String logo = "Images/logo.jpeg";
         String title = "Login";
         WindowBuild windowBuild = WindowBuild.getInstance();
-        Scene scene = new SceneBuilder().withPath(ruta).build();
+        SceneBuilder sb = new SceneBuilder().withPath(ruta);
+        sb.build();
+        Scene scene = sb.getScene();
         windowBuild.withStage(primaryStage).withTitle(title).withLogo(logo).withScene(scene).build();
         windowBuild.show();
     }

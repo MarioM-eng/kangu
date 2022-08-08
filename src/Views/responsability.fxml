@@ -2,12 +2,14 @@
 
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -35,7 +37,7 @@
                                     <VBox>
                                        <children>
                                           <TextField fx:id="tfDni" prefHeight="25.0" prefWidth="149.0" />
-                                          <Label fx:id="mensajeCodLb" styleClass="label-error" text="error">
+                                          <Label fx:id="lbNoticeDni" styleClass="label-error">
                                              <font>
                                                 <Font size="10.0" />
                                              </font>
@@ -54,7 +56,7 @@
                                     <VBox>
                                        <children>
                                           <TextField fx:id="tfName" />
-                                          <Label fx:id="mensajeNameLb" styleClass="label-error" text="error">
+                                          <Label fx:id="lbNoticeName" styleClass="label-error">
                                              <font>
                                                 <Font size="10.0" />
                                              </font>
@@ -67,14 +69,14 @@
                                  <children>
                                     <Label text="Celular" />
                                     <TextField fx:id="tfCel" />
-                                    <Label styleClass="label-error" text="Label" />
+                                    <Label fx:id="lbNoticeCel" styleClass="label-error" />
                                  </children>
                               </VBox>
                               <VBox layoutX="218.0" layoutY="83.0">
                                  <children>
                                     <Label text="Dirección" />
                                     <TextField fx:id="tfAddress" />
-                                    <Label styleClass="label-error" text="Label" />
+                                    <Label fx:id="lbNoticeAddress" styleClass="label-error" />
                                  </children>
                               </VBox>
                               <HBox alignment="CENTER" layoutX="89.0" layoutY="151.0" prefWidth="200.0" spacing="5.0" styleClass="btn-group">
@@ -95,27 +97,33 @@
                                           <String fx:value="btn" />
                                        </styleClass>
                                     </Button>
-                                    <Button fx:id="btnRemove" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" textFill="WHITE">
+                                    <Button id="btn-update" fx:id="btnUpdate" disable="true" mnemonicParsing="false" textFill="WHITE">
                                        <graphic>
                                           <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
-                                                <Image url="@../Images/white/005-add.png" />
+                                                <Image url="@../Images/white/006-refresh.png" />
                                              </image>
+                                             <viewport>
+                                                <Rectangle2D />
+                                             </viewport>
                                           </ImageView>
                                        </graphic>
                                        <cursor>
-                                          <Cursor fx:constant="HAND" />
+                                          <Cursor fx:constant="DEFAULT" />
                                        </cursor>
                                        <styleClass>
-                                          <String fx:value="btn-red" />
                                           <String fx:value="btn" />
+                                          <String fx:value="btn-green" />
                                        </styleClass>
+                                       <tooltip>
+                                          <Tooltip text="Actualizar" />
+                                       </tooltip>
                                     </Button>
-                                    <Button fx:id="btnCleanUp" layoutX="137.0" layoutY="10.0" mnemonicParsing="false" textFill="WHITE">
+                                    <Button fx:id="btnCleanUp" disable="true" layoutX="137.0" layoutY="10.0" mnemonicParsing="false" textFill="WHITE">
                                        <graphic>
                                           <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
-                                                <Image url="@../Images/white/005-add.png" />
+                                                <Image url="@../Images/white/paper-bin.png" />
                                              </image>
                                           </ImageView>
                                        </graphic>
@@ -136,37 +144,32 @@
                         </AnchorPane>
                      </content>
                   </ScrollPane>
-                  <VBox spacing="10.0">
+                  <VBox>
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="10.0">
                            <children>
-                              <TextField fx:id="tfSearch" />
-                              <Button id="btn-consult" fx:id="btnAll" layoutX="169.0" layoutY="10.0" mnemonicParsing="false">
+                              <Button fx:id="btnDelete" mnemonicParsing="false">
                                  <cursor>
                                     <Cursor fx:constant="DEFAULT" />
                                  </cursor>
                                  <graphic>
                                     <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../Images/white/003-list.png" />
+                                          <Image url="@../Images/white/004-trash.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
                                  <styleClass>
+                                    <String fx:value="btn-red" />
                                     <String fx:value="btn" />
-                                    <String fx:value="btn-gray" />
                                  </styleClass>
+                                 <tooltip>
+                                    <Tooltip text="Eliminar" />
+                                 </tooltip>
                               </Button>
                            </children>
                         </HBox>
-                        <ScrollPane style="-fx-border-color: transparent;">
-                           <content>
-                              <TableView fx:id="tblElements" prefHeight="180.0" />
-                           </content>
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </ScrollPane>
+                        <TableView fx:id="tblElements" prefHeight="180.0" />
                      </children>
                      <padding>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

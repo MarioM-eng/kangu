@@ -97,7 +97,7 @@
                                        <graphic>
                                           <ImageView fitHeight="20.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
-                                                <Image url="@../Images/white/005-add.png" />
+                                                <Image url="@../Images/white/paper-bin.png" />
                                              </image>
                                           </ImageView>
                                        </graphic>
@@ -105,7 +105,7 @@
                                           <Cursor fx:constant="HAND" />
                                        </cursor>
                                        <styleClass>
-                                          <String fx:value="btn-yellow" />
+                                          <String fx:value="btn-red" />
                                           <String fx:value="btn" />
                                           <String fx:value="btn-large" />
                                        </styleClass>

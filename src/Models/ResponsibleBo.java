@@ -121,11 +121,10 @@ public class ResponsibleBo extends PersonBo<ResponsibleVo> {
         return responsible;
     }
 
-    public void update(ResponsibleVo responsibleVo)
+    public boolean update(ResponsibleVo responsibleVo)
     {
-        
         //Se define la consulta que vamos a realizar
-        String query = "CALL update_responsible(?,?,?,?,?,?)";
+        String query = "CALL update_responsible(?,?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
         CallableStatement callable = null;
         //Dentro de un try-catch creamos la conexión
@@ -138,20 +137,19 @@ public class ResponsibleBo extends PersonBo<ResponsibleVo> {
             callable.setString(3, responsibleVo.getDni());
             callable.setString(4, responsibleVo.getCel());
             callable.setString(5, responsibleVo.getAddress());
-
             //Ejecutamos
-            callable.executeUpdate();
-            System.out.println("Responsable de paciente actualizado");
-            //Utilizar hilos aquí
-            //Actualizamos la lista de responsables almacenada en memoria
-            updateElement(responsibleVo);
-            
+            if(callable.executeUpdate() != -1){
+                findThroughList(responsibleVo.getId()).replace(responsibleVo);
+                return true;
+            }            
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al actualizar responsable del paciente: " + e.getMessage());
+            return false;
         }catch (Exception e) {
             //TODO: handle exception
             System.err.println("Error al actualizar responsable del paciente: " + e.getMessage());
+            return false;
         } finally{
             if(callable != null){
                 try {
@@ -162,9 +160,10 @@ public class ResponsibleBo extends PersonBo<ResponsibleVo> {
                 }
             }
         }
+        return false;
     }
 
-    public void softDelete(ResponsibleVo responsibleVo){
+    public boolean softDelete(ResponsibleVo responsibleVo){
         //Se define la consulta que vamos a realizar
         String query = "CALL soft_delete_person(?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -178,19 +177,19 @@ public class ResponsibleBo extends PersonBo<ResponsibleVo> {
             callable.registerOutParameter(2, Types.DATE);
 
             //Ejecutamos
-            callable.executeUpdate();
-            //Utilizar hilos aquí
-            //Actualizamos la lista de personas almacenada en memoria
-            responsibleVo.setDeleted_at(callable.getDate(2));
-            updateElement(responsibleVo);
-            System.out.println("Responsable del paciente eliminado");
+            if(callable.executeUpdate() != -1){
+                responsibleVo.setDeleted_at(callable.getDate(2));
+                return true;
+            }
             
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al eliminar Responsable del paciente: " + e.getMessage());
+            return false;
         }catch (Exception e) {
             //TODO: handle exception
             System.err.println("Error al eliminar Responsable del paciente: " + e.getMessage());
+            return false;
         } finally{
             if(callable != null){
                 try {
@@ -201,9 +200,10 @@ public class ResponsibleBo extends PersonBo<ResponsibleVo> {
                 }
             }
         }
+        return false;
     }
     
-    public void recovery(ResponsibleVo responsibleVo){
+    public boolean recovery(ResponsibleVo responsibleVo){
         //Se define la consulta que vamos a realizar
         String query = "CALL recovery_person(?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -216,18 +216,22 @@ public class ResponsibleBo extends PersonBo<ResponsibleVo> {
             callable.setInt(1, responsibleVo.getId());
 
             //Ejecutamos
-            callable.executeUpdate();
-            System.out.println("Responsable del paciente recuperado");
-            //Utilizar hilos aquí
-            //Actualizamos la lista de personas almacenada en memoria
-            updateElement(responsibleVo);
+            if(callable.executeUpdate() != -1){
+                //Recuperamos el elemento en la lista vaciando la variable deleted_at
+                responsibleVo.setDeleted_at(null);
+                return true;
+            }else{
+                System.out.println("No fue posible recuperar al paciente en la base de datos");
+            }
             
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al recuperar responsable del paciente paciente: " + e.getMessage());
+            return false;
         }catch (Exception e) {
             //TODO: handle exception
             System.err.println("Error al recuperar responsable del paciente paciente: " + e.getMessage());
+            return false;
         } finally{
             if(callable != null){
                 try {
@@ -238,6 +242,7 @@ public class ResponsibleBo extends PersonBo<ResponsibleVo> {
                 }
             }
         }
+        return false;
     }
 
     public ResponsibleVo findById(int id)

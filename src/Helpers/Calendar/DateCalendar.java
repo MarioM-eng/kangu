@@ -1,18 +1,23 @@
 package Helpers.Calendar;
 
-import java.sql.Date;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.temporal.Temporal;
+import java.time.temporal.TemporalAccessor;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.TemporalField;
+import java.time.temporal.TemporalUnit;
+import java.time.temporal.ValueRange;
 import java.util.ArrayList;
 import java.util.List;
 
 import Controllers.ScheduleController;
-import Controllers.Schedule.AppointmentController;
+import Controllers.Schedules.AppointmentComponent;
 import Helpers.Facades.View;
 import Models.ScheduleVo;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
@@ -32,12 +37,11 @@ public class DateCalendar {
     private DatePickerSkin datePickerSkin;
     private Pane container;
     private ObservableList<Integer> daysOfWeekEnabled;
-    private ObservableMap<LocalDate,ScheduleVo> markedDays;
+    private ObservableList<LocalDate> markedDays;
     private ObservableList<ScheduleVo> daysDisabled;
-    private LocalDate dpFrom, dpTo;
     private DatePicker calendarDatePicker;
     private List<DateCell> dateCells;
-    private AppointmentController AppointmentController;
+    private AppointmentComponent AppointmentController;
 
     public DateCalendar(Pane container) {
         init(container);
@@ -46,10 +50,10 @@ public class DateCalendar {
     
 
     
-    public AppointmentController getAppointmentController() {
+    public AppointmentComponent getAppointmentController() {
         return AppointmentController;
     }
-    public void setAppointmentController(AppointmentController appointmentController) {
+    public void setAppointmentController(AppointmentComponent appointmentController) {
         AppointmentController = appointmentController;
     }
 
@@ -69,28 +73,12 @@ public class DateCalendar {
         this.daysOfWeekEnabled = daysOfWeekEnabled;
     }
 
-    public ObservableMap<LocalDate,ScheduleVo> getMarkedDays() {
+    public ObservableList<LocalDate> getMarkedDays() {
         return markedDays;
     }
 
-    public void setMarkedDays(ObservableMap<LocalDate,ScheduleVo> markedDays) {
+    public void setMarkedDays(ObservableList<LocalDate> markedDays) {
         this.markedDays = markedDays;
-    }
-
-    public LocalDate getDpFrom() {
-        return dpFrom;
-    }
-
-    public void setDpFrom(LocalDate dpFrom) {
-        this.dpFrom = dpFrom;
-    }
-
-    public LocalDate getDpTo() {
-        return dpTo;
-    }
-
-    public void setDpTo(LocalDate dpTo) {
-        this.dpTo = dpTo;
     }
 
 
@@ -112,176 +100,67 @@ public class DateCalendar {
         System.out.println(getMarkedDays().size());
     }
 
-    /**
-     * Selecciona un rango entre dos fechas seleccionadas del calendario
-     * @param item día seleccionado del calendario
-     */
-    private void selecionOfDateRange(LocalDate item){
-        if (getDpFrom() == null && getDpTo() == null) {
-            getMarkedDays().clear();
-            setDpFrom(item);
-        } else if (getDpFrom() != null && getDpTo() == null) {
-            setDpTo(item);
-            if (Date.valueOf(getDpFrom()).getTime() > Date.valueOf(getDpTo()).getTime()) {
-                getMarkedDays().clear();
-                setDpFrom(item);
-                setDpTo(null);
-            }
-        } else if (getDpFrom() != null && getDpTo() != null) {
-            getMarkedDays().clear();
-            setDpFrom(item);
-            setDpTo(null);
-        }
-        daysSelected();
-    }
-
     private void dateCellevent(LocalDate item,DateCell dateCell){
         dateCell.setOnMouseClicked(
                 action -> {
                     if(action.getButton().equals(MouseButton.PRIMARY)){
-                        if(getAppointmentController().getCbRangeMode().isSelected()){
-                            selecionOfDateRange(item);
-                        }/* else{
-                            daySelected(item);
-                        } */
-
+                        System.out.println(firstDayOfWeek(item));
                         if(action.getClickCount() >= 2){
-                            ScheduleVo scheduleVo = daySelected(item);
-                            scheduleVo.setAppointment(getAppointmentController().getAppointmentVo());
-                            ScheduleController controller = new ScheduleController(scheduleVo);
+                            daySelected(item);
+                            ScheduleController controller = new ScheduleController();
+                            /* controller.getParams().put("appointment", getAppointmentController().getAppointmentVo());
+                            controller.getParams().put("day", item); */
                             View.getInstance().createModalWithWait(controller, "Horario");
-                            if(scheduleVo.getFrom() == null){
+                            /* if(scheduleVo.getFrom() == null){
                                 dayUnSelected(item);
-                            }
+                            } */
                         }
                     }
                 }
         );
     }
 
+    public LocalDate firstDayOfWeek(LocalDate item){
+        //TemporalAdjusters.previous(DayOfWeek.MONDAY);
+        item = item.with(TemporalAdjusters.previous(DayOfWeek.MONDAY));
+        return item;
+    }
+
+    public LocalDate lastDayOfWeek(LocalDate item){
+        //TemporalAdjusters.previous(DayOfWeek.MONDAY);
+        item = item.with(TemporalAdjusters.next(DayOfWeek.FRIDAY));
+        return item;
+    }
+
     /**
-     * Actualiza las celdas con la lista de días marcados(markedDays) dada
+     * Actualiza las celdas con la lista de días marcados(markedDays) dada a 
+     * partir de una lista de schedules
      * @param markedDays lista con los días marcados
      */
-    public void daysSelected(ObservableMap<LocalDate,ScheduleVo> markedDays){
-        setMarkedDays(markedDays);
+    public void daysSelected(ObservableList<ScheduleVo> markedDays){
+        getMarkedDays().removeAll(getMarkedDays());
+        markedDays.forEach(
+            element->getMarkedDays().add(element.getDay().toLocalDate())
+        );
         markDyas();
     }
 
     /**
      * Agrega a la lista de días marcados(markedDays) un día y marca la celda
      */
-    private ScheduleVo daySelected(LocalDate day){
-        if (!getMarkedDays().containsKey(day)) {
-            ScheduleVo schedule = new ScheduleVo();
-            schedule.setDay(Date.valueOf(day));
-            getMarkedDays().put(day, schedule);
+    private void daySelected(LocalDate day){
+        if (!getMarkedDays().contains(day)) {
+            getMarkedDays().add(day);
             markCell(findDateCell(day));
         }
-        return getMarkedDays().get(day);
     }
     /**
      * Agrega a la lista de días marcados(markedDays) un día y marca la celda
      */
     private void dayUnSelected(LocalDate day){
-        if (getMarkedDays().containsKey(day)) {
+        if (getMarkedDays().contains(day)) {
             getMarkedDays().remove(day);
             unmarkCell(findDateCell(day));
-        }
-    }
-
-    /**
-     * LLena la lista de días marcados(markedDays) y marca las celdas
-     */
-    public void daysSelected(){
-        ScheduleVo scheduleVo;
-        if(getDpFrom() != null){
-            //System.out.println(contar++);
-            if (getDpTo() == null) {
-                if (getDpFrom().isAfter(LocalDate.now().minusDays(1))) {
-                    if (!getMarkedDays().containsKey(getDpFrom())) {
-                        scheduleVo = new ScheduleVo();
-                        scheduleVo.setDay(Date.valueOf(getDpFrom()));
-                        getMarkedDays().put(getDpFrom(), scheduleVo);
-                    }
-                }
-            }else{
-                LocalDate day = getDpFrom();
-                while (Date.valueOf(day).getTime() <= Date.valueOf(getDpTo()).getTime()) {
-                    if (day.isAfter(LocalDate.now().minusDays(1))) {
-                        if(!isWeekend(day.getDayOfWeek())){
-                            LocalDate dayEnabled = checkDayEnabled(day);
-                            if(dayEnabled != null){
-                                if (!getMarkedDays().containsKey(day)) {
-                                    scheduleVo = new ScheduleVo();
-                                    scheduleVo.setDay(Date.valueOf(day));
-                                    getMarkedDays().put(day, scheduleVo);
-                                }
-                            } else{
-                                if (getMarkedDays().containsKey(day)) {
-                                    getMarkedDays().remove(day);
-                                }
-                            }
-                        }
-                    }
-                    day = day.plusDays(1);
-                }
-            }
-        }
-        markDyas();
-    }
-    
-    /**
-     * Verifica si el día seleccionado hace parte de 
-     * la lista de dias de la semana seleccionados previamente.
-     * @param day día de la semana
-     * @return si en la lista de diás de la semana hablitados se encuentra un 9, cualquier día
-     * que se pasé será retornado. En caso de que en la lista esté un 8, se retornará solo
-     * la fecha del día en que comienza el rango. Si la variable <code> day </code> coincide
-     * con un día de la semana que esté en la lista, se retornará ese día, de lo contrario 
-     * retornará null.
-     */
-    private LocalDate checkDayEnabled(LocalDate item){
-        if(getDaysOfWeekEnabled().contains(Integer.valueOf(8))){
-            if (item.equals(getDpFrom())) {
-                /* if (!getMarkedDays().contains(item)) {
-                    getMarkedDays().add(item);
-                } */
-                return item;
-            } else {
-                /* if (getMarkedDays().contains(item)) {
-                    getMarkedDays().remove(item);
-                } */
-                return null;
-            }
-        } else if(getDaysOfWeekEnabled().contains(Integer.valueOf(9))){
-            /* if (!getMarkedDays().contains(item)) {
-                getMarkedDays().add(item);
-            } */
-            return item;
-        } else if(getDaysOfWeekEnabled().contains(Integer.valueOf(item.getDayOfWeek().getValue()))){
-            /* if (!getMarkedDays().contains(item)) {
-                getMarkedDays().add(item);
-            } */
-            return item;
-        } else {
-            /* if (getMarkedDays().contains(item)) {
-                getMarkedDays().remove(item);
-            } */
-            return null;
-        }
-    }
-    
-    /**
-     * Verifica si el día es fin de semana
-     * @param day el día de la semana a evaluar
-     * @return <code>true</code> si el día es fin de semana <code>false</code> si no
-     */
-    private boolean isWeekend(DayOfWeek day){
-        if(day != DayOfWeek.SATURDAY && day != DayOfWeek.SUNDAY){
-            return false;
-        }else{
-            return true;
         }
     }
 
@@ -294,7 +173,7 @@ public class DateCalendar {
                 cell -> {
                     unmarkCell(cell);
                     getMarkedDays().forEach(
-                            (day,schedule) -> {
+                            (day) -> {
                                 if (cell.getItem().equals(day)) {
                                     markCell(cell);
                                 }
@@ -366,9 +245,7 @@ public class DateCalendar {
                 unmarkAll.setOnAction(
                     action->{
                         getMarkedDays().clear();
-                        setDpFrom(null);
-                        setDpTo(null);
-                        daysSelected();
+                        markDyas();
                     }
                     );
                 cMenuCell.getItems().addAll(unmark,unmarkAll);
@@ -389,7 +266,7 @@ public class DateCalendar {
                         getDateCells().add(this);
                     }
                     
-                    if(getMarkedDays().containsKey(this.getItem())){
+                    if(getMarkedDays().contains(this.getItem())){
                         markCell(this);
                     }else{
                         unmarkCell(this);
@@ -466,7 +343,7 @@ public class DateCalendar {
     private void init(Pane container){
         this.container = container;
         this.daysOfWeekEnabled = FXCollections.observableArrayList();
-        this.markedDays = FXCollections.observableHashMap();
+        this.markedDays = FXCollections.observableArrayList();
         this.daysDisabled = FXCollections.observableArrayList();
         this.daysOfWeekEnabled.add(9);
         calendarDatePicker = new DatePicker(LocalDate.now());

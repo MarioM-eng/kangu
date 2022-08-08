@@ -70,11 +70,9 @@ public class PatientBo extends PersonBo<PatientVo>{
 
     public PatientVo create(PatientVo patientVo)
     {
-
         if(checkPerson(patientVo)){
             return null;
         }
-
         //Se define la consulta que vamos a realizar
         String query = "CALL add_patient(?,?,?,?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -95,12 +93,18 @@ public class PatientBo extends PersonBo<PatientVo>{
             callable.registerOutParameter(7, Types.INTEGER);
 
             //Ejecutamos
-            callable.executeUpdate();
-            //Utilizar hilos aquí
-            //Buscamos y guardamos en la variable responsible al responsable agregado agregado
-            patientVo = findById(callable.getInt(7));
-            addElement(patientVo);
-            System.out.println("Paciente agregado");
+            if(callable.executeUpdate() != -1){
+                //Buscamos al usuario agregado en la db
+                patientVo = findById(callable.getInt(7));
+                //Agregamos al elemento en la lista; Retorna true si se agregó exitosamente
+                if(addElement(patientVo)){
+                    System.out.println("Paciente agregado");
+                }else{
+                    System.out.println("No fue posible agregar el elemento a la lista");
+                }
+            }else{
+                System.out.println("No fue posible registar paciente en la base de datos");
+            }
             
         } catch (SQLException e) {
             //TODO: handle exception
@@ -121,9 +125,8 @@ public class PatientBo extends PersonBo<PatientVo>{
         return patient;
     }
 
-    public void update(PatientVo patientVo)
+    public boolean update(PatientVo patientVo)
     {
-        
         //Se define la consulta que vamos a realizar
         String query = "CALL update_patient(?,?,?,?,?,?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -142,18 +145,19 @@ public class PatientBo extends PersonBo<PatientVo>{
             callable.setString(7, patientVo.getDiagnosis());
 
             //Ejecutamos
-            callable.executeUpdate();
-            //Utilizar hilos aquí
-            //Actualizamos la lista de usuarios almacenada en memoria
-            updateElement(patientVo);
-            System.out.println("Paciente actualizado");
+            if(callable.executeUpdate() != -1){
+                findThroughList(patientVo.getId()).replace(patientVo);
+                return true;
+            }
             
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al actualizar paciente: " + e.getMessage());
+            return false;
         }catch (Exception e) {
             //TODO: handle exception
             System.err.println("Error al actualizar paciente: " + e.getMessage());
+            return false;
         } finally{
             if(callable != null){
                 try {
@@ -164,10 +168,10 @@ public class PatientBo extends PersonBo<PatientVo>{
                 }
             }
         }
-
+        return false;
     }
 
-    public void softDelete(PatientVo patientVo){
+    public boolean softDelete(PatientVo patientVo){
         //Se define la consulta que vamos a realizar
         String query = "CALL soft_delete_person(?,?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -181,19 +185,18 @@ public class PatientBo extends PersonBo<PatientVo>{
             callable.registerOutParameter(2, Types.DATE);
 
             //Ejecutamos
-            callable.executeUpdate();
-            //Utilizar hilos aquí
-            //Actualizamos la lista de pacientes almacenada en memoria
-            patientVo.setDeleted_at(callable.getDate(2));
-            updateElement(patientVo);
-            System.out.println("Paciente eliminado");
-            
+            if(callable.executeUpdate() != -1){
+                patientVo.setDeleted_at(callable.getDate(2));
+                return true;
+            }
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al eliminar paciente: " + e.getMessage());
+            return false;
         }catch (Exception e) {
             //TODO: handle exception
             System.err.println("Error al eliminar paciente: " + e.getMessage());
+            return false;
         } finally{
             if(callable != null){
                 try {
@@ -204,9 +207,10 @@ public class PatientBo extends PersonBo<PatientVo>{
                 }
             }
         }
+        return false;
     }
     
-    public void recovery(PatientVo patientVo){
+    public boolean recovery(PatientVo patientVo){
         //Se define la consulta que vamos a realizar
         String query = "CALL recovery_person(?)";
         //La interfaz CallableStatement permite la utilización de sentencias SQL para llamar a procedimientos almacenados
@@ -219,19 +223,21 @@ public class PatientBo extends PersonBo<PatientVo>{
             callable.setInt(1, patientVo.getId());
 
             //Ejecutamos
-            callable.executeUpdate();
-            //Utilizar hilos aquí
-            //Actualizamos la lista de pacientes almacenada en memoria
-            patientVo.setDeleted_at(null);
-            updateElement(patientVo);
-            System.out.println("paciente recuperado");
-            
+            if(callable.executeUpdate() != -1){
+                //Recuperamos el elemento en la lista vaciando la variable deleted_at
+                patientVo.setDeleted_at(null);
+                return true;
+            }else{
+                System.out.println("No fue posible recuperar al paciente en la base de datos");
+            }
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al recuperar paciente: " + e.getMessage());
+            return false;
         }catch (Exception e) {
             //TODO: handle exception
             System.err.println("Error al recuperar paciente: " + e.getMessage());
+            return false;
         } finally{
             if(callable != null){
                 try {
@@ -242,6 +248,7 @@ public class PatientBo extends PersonBo<PatientVo>{
                 }
             }
         }
+        return false;
     }
 
     public PatientVo findById(int id)
@@ -270,9 +277,6 @@ public class PatientBo extends PersonBo<PatientVo>{
                 patient.setUpdated_at(resultados.getDate("updated_at"));
                 patient.setDeleted_at(resultados.getDate("deleted_at"));
             }
-
-            
-            
         } catch (SQLException e) {
             //TODO: handle exception
             System.err.println("Error al buscar paciente: " + e.getMessage());
@@ -291,5 +295,20 @@ public class PatientBo extends PersonBo<PatientVo>{
         }
         return patient;
     }
+
+    /**
+     * Encuentra un elemento en la lista de elementos almacenada y actualizada en memoria
+     * @param dni
+     * @return el elemento
+     */
+    /* public PatientVo findThroughList(String dni){
+        for (PatientVo t : getElements()) {
+            if(t.getDni().equals(dni)){
+                return t;
+            }
+        }
+        System.out.println("Elemento no encontrado");
+        return null;
+    } */
 
 }

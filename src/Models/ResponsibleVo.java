@@ -43,6 +43,23 @@ public class ResponsibleVo extends Person {
         this.address.set(address);
     }
 
-    
+    /**
+     * Reemplaza los datos de un objeto por otro
+     * @param responsibleVo
+     */
+    public void replace(ResponsibleVo responsibleVo){
+        this.setDni(responsibleVo.getDni());
+        this.setName(responsibleVo.getName());
+        this.setCel(responsibleVo.getCel());
+        this.setAddress(responsibleVo.getAddress());
+        this.setCreated_at(responsibleVo.getCreated_at());
+        this.setUpdated_at(responsibleVo.getUpdated_at());
+        this.setDeleted_at(responsibleVo.getDeleted_at());
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new ResponsibleVo(getId(), getName(), getDni(), getCel(), getAddress());
+    }
     
 }

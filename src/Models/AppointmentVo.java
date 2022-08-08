@@ -25,4 +25,25 @@ public class AppointmentVo extends Model {
         this.user = user;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        AppointmentVo apppintment = (AppointmentVo) obj;
+        if(apppintment.getId() != 0){
+            if (apppintment.getId() == this.getId() && 
+                apppintment.getUser().equals(this.getUser()) && 
+                apppintment.getPatient().equals(this.getPatient())) {
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            if (apppintment.getUser().equals(this.getUser()) && 
+                apppintment.getPatient().equals(this.getPatient())) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+    }
+
 }
