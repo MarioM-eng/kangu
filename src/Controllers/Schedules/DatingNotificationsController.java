@@ -6,6 +6,8 @@ import java.util.ResourceBundle;
 
 import Controllers.Controller;
 import Models.ScheduleVo;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.DatePicker;
@@ -20,26 +22,24 @@ public class DatingNotificationsController extends Controller implements Initial
     @FXML private Label lbFrom;
     @FXML private Label lbTo;
 
-    private ScheduleVo scheduleVo;
+    public static ObservableList<ScheduleVo> schedules = FXCollections.observableArrayList();
 
     public DatingNotificationsController(ScheduleVo scheduleVo) {
-        this.scheduleVo = scheduleVo;
-    }
-
-    public ScheduleVo getScheduleVo() {
-        return scheduleVo;
+        schedules.add(scheduleVo);
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         DatePicker dp = new DatePicker();
         dp.setConverter(new LocalDateStringConverter(FormatStyle.FULL));
-        lbDay.setText(dp.getConverter().toString(getScheduleVo().getDay().toLocalDate()));
-        lbProfessional.setText(getScheduleVo().getAppointment().getUser().toString());
-        lbPatient.setText(getScheduleVo().getAppointment().getPatient().toString());
-        lbFrom.setText(getScheduleVo().getFrom().toString());
-        lbTo.setText(getScheduleVo().getTo().toString());
-        
+        if(!schedules.isEmpty()){
+            ScheduleVo sche = schedules.get(schedules.size()-1);
+            lbDay.setText(dp.getConverter().toString(sche.getDay().toLocalDate()));
+            lbProfessional.setText(sche.getAppointment().getUser().toString());
+            lbPatient.setText(sche.getAppointment().getPatient().toString());
+            lbFrom.setText(sche.getFrom().toString());
+            lbTo.setText(sche.getTo().toString());
+        }
     }
 
     

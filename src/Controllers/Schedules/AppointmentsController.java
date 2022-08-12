@@ -9,7 +9,6 @@ import java.util.ResourceBundle;
 
 import Controllers.Controller;
 import Controllers.ScheduleController;
-import Helpers.ViewsPath;
 import Helpers.Alert.AlertImplement;
 import Helpers.Facades.IAlert;
 import Helpers.Facades.View;
@@ -34,7 +33,6 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.converter.LocalDateStringConverter;
 
@@ -141,8 +139,21 @@ public class AppointmentsController extends Controller implements Initializable{
         ScheduleBo.getInstance().getElements().forEach(
             element->{
                 if(element.getDay().equals(Date.valueOf(LocalDate.now()))){
-                    DatingNotificationsController noti = new DatingNotificationsController(element);
-                    View.getInstance().createEmbed(noti,"notificacion_cita",pContentNotificationToday);
+                    if(!DatingNotificationsController.schedules.isEmpty()){
+                        boolean check = false;
+                        for (ScheduleVo sche : DatingNotificationsController.schedules) {
+                            if(sche.getFrom().getTime() == element.getFrom().getTime()){
+                                check = true;
+                            }
+                        }
+                        if(!check){
+                            DatingNotificationsController noti = new DatingNotificationsController(element);
+                            View.getInstance().createEmbed(noti,"notificacion_cita",pContentNotificationToday);
+                        }
+                    }else{
+                        DatingNotificationsController noti = new DatingNotificationsController(element);
+                        View.getInstance().createEmbed(noti,"notificacion_cita",pContentNotificationToday);
+                    }
                 }
             }
         );
@@ -166,6 +177,11 @@ public class AppointmentsController extends Controller implements Initializable{
             }
         }
         
+    }
+
+    private void notifications(){
+        notifacionToday();
+        notifacionNext();
     }
 
 
@@ -209,14 +225,14 @@ public class AppointmentsController extends Controller implements Initializable{
                         calendar.firstDayOfWeek(calendar.getDaySelected()), 
                         calendar.lastDayOfWeek(calendar.getDaySelected()), 
                         getAppointment());
+                        notifications();
                 }else{
                     alert.alert("Seleccione un paciente y un profesional", IAlert.SIMPLE);
                 }
             }
         );
 
-        notifacionToday();
-        notifacionNext();
+        notifications();
     }
 
     public AppointmentVo getAppointment() {

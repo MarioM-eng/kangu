@@ -3,7 +3,7 @@ package Helpers;
 public class ClassHandler {
 
     public static String classNameToStringLower(Object c){
-        String name = c.getClass().getName();
+        String name = c.getClass().getSimpleName();
         name = name.substring(0, name.length() - 2);
         name = name.toLowerCase();
         if(name.contains(".")){
@@ -13,7 +13,7 @@ public class ClassHandler {
     }
 
     public static String classNameToStringLower(Object c,String concat){
-        String name = c.getClass().getName();
+        String name = c.getClass().getSimpleName();
         name = name.substring(0, name.length() - 2);
         name = name.toLowerCase();
         if(name.contains(".")){
@@ -24,13 +24,13 @@ public class ClassHandler {
     }
 
     public static String classNameToString(Object c){
-        String name = c.getClass().getName();
+        String name = c.getClass().getSimpleName();
         name = name.substring(0, name.length() - 2);
         return name;
     }
 
     public static String classNameToString(Object c,String concat){
-        String name = c.getClass().getName();
+        String name = c.getClass().getSimpleName();
         name = name.substring(0, name.length() - 2);
         name = name.concat(concat);
         return name;

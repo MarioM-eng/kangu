@@ -112,12 +112,12 @@ public class UserController implements Initializable {
 
     private void paperBin(ActionEvent actionEvent){
         tblElements.setItems(UserBo.getInstance().getElements().filtered(
-            element->element.getDeleted_at()!=null));
+            element->element.getDeletedAt()!=null));
     }
 
     private void all(ActionEvent actionEvent){
         tblElements.setItems(UserBo.getInstance().getElements().filtered(
-            element->element.getDeleted_at()==null));
+            element->element.getDeletedAt()==null));
     }
     
     private void resetPassword(ActionEvent actionEvent){
@@ -228,14 +228,14 @@ public class UserController implements Initializable {
         tColumnUserName.setCellValueFactory(new PropertyValueFactory<UserVo, String>("username"));
 
         tblElements.setItems(UserBo.getInstance().getElements().filtered(
-            element->element.getDeleted_at()==null));
+            element->element.getDeletedAt()==null));
 
         tblElements.getColumns().addAll(Arrays.asList(tColumnDni,tColumnName,tColumnUserName));
     }
 
     private void fillTable(){
         tblElements.setItems(UserBo.getInstance().getElements().filtered(
-            element->element.getDeleted_at()==null));
+            element->element.getDeletedAt()==null));
     }
 
     private void loadElementInForm() {

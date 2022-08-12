@@ -11,9 +11,10 @@ public class PatientVo extends Person{
     private SimpleObjectProperty<Date> dateBirth;
     private SimpleStringProperty sex;
     private SimpleStringProperty diagnosis;
+    private String[] fillable = {"age","dateBirth","sex","diagnosis", "createdAt", "updatedAt", "deletedAt"};
 
-    public PatientVo(int id, String name, String dni, String age, Date dateBirth, String sex, String diagnosis) {
-        super(id,name,dni);
+    public PatientVo(int id, String name, String dni, String age, Date dateBirth, String sex, String diagnosis, Date createdAt, Date updatedAt, Date deletedAt) {
+        super(id,name,dni, createdAt, updatedAt, deletedAt);
         this.age = new SimpleStringProperty(age);
         this.dateBirth = new SimpleObjectProperty<>(dateBirth);
         this.sex = new SimpleStringProperty(sex);
@@ -84,14 +85,15 @@ public class PatientVo extends Person{
         this.setDateBirth(patientVo.getDateBirth());
         this.setSex(patientVo.getSex());
         this.setDiagnosis(patientVo.getDiagnosis());
-        this.setCreated_at(patientVo.getCreated_at());
-        this.setUpdated_at(patientVo.getUpdated_at());
-        this.setDeleted_at(patientVo.getDeleted_at());
+        this.setCreatedAt(patientVo.getCreatedAt());
+        this.setUpdatedAt(patientVo.getUpdatedAt());
+        this.setDeletedAt(patientVo.getDeletedAt());
     }
 
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return new PatientVo(getId(), getName(), getDni(), getAge(), getDateBirth(), getSex(), getDiagnosis());
+        return new PatientVo(getId(), getName(), getDni(), getAge(), getDateBirth(), getSex(), getDiagnosis(), getCreatedAt(), 
+        getCreatedAt(), getDeletedAt());
     }
     
 }

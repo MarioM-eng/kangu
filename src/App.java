@@ -1,5 +1,6 @@
 import java.net.URL;
 
+import Helpers.HelperENCRYPT;
 import Helpers.ViewsPath;
 import Helpers.Facades.View;
 import Helpers.ViewCreator.SceneBuilder;
@@ -19,10 +20,11 @@ public class App extends Application{
     public void start(Stage primaryStage) throws Exception {
         //Para el buen funcionamiento de la ventana principal, la agregamos al creador de ventanas
         WindowBuild.getInstance().withStage(primaryStage);
-        //login(primaryStage);
+        View.getI@can ('update', $post) 
+            
+        @elsecan ('create', $post) 
         
-        //View.getInstance().createModal(controller, "Agendas");
-        View.getInstance().create("Kangu");
+        @endcannstance().create("Kangu");
         
         /* String logo = "Images/logo.jpeg";
         String title = "Profesional";

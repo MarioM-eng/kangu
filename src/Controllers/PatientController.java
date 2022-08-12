@@ -182,7 +182,7 @@ public class PatientController implements Initializable {
 
     private void paperBin(ActionEvent actionEvent){
         tblElements.setItems(PatientBo.getInstance().getElements().filtered(
-            element->element.getDeleted_at()!=null));
+            element->element.getDeletedAt()!=null));
     }
 
     private void all(ActionEvent actionEvent){
@@ -247,7 +247,7 @@ public class PatientController implements Initializable {
 
     private void fillTable(){
         tblElements.setItems(PatientBo.getInstance().getElements().filtered(
-            element->element.getDeleted_at()==null));
+            element->element.getDeletedAt()==null));
     }
 
     private void loadElementInForm() {

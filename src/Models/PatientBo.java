@@ -44,9 +44,9 @@ public class PatientBo extends PersonBo<PatientVo>{
                 patient.setSex(resultados.getString("sex"));
                 patient.setDateBirth(resultados.getDate("date_birth"));
                 patient.setDiagnosis(resultados.getString("diagnosis"));
-                patient.setCreated_at(resultados.getDate("created_at"));
-                patient.setUpdated_at(resultados.getDate("updated_at"));
-                patient.setDeleted_at(resultados.getDate("deleted_at"));
+                patient.setCreatedAt(resultados.getDate("created_at"));
+                patient.setUpdatedAt(resultados.getDate("updated_at"));
+                patient.setDeletedAt(resultados.getDate("deleted_at"));
                 lista.add(patient);
             }
         } catch (SQLException e) {
@@ -186,7 +186,7 @@ public class PatientBo extends PersonBo<PatientVo>{
 
             //Ejecutamos
             if(callable.executeUpdate() != -1){
-                patientVo.setDeleted_at(callable.getDate(2));
+                patientVo.setDeletedAt(callable.getDate(2));
                 return true;
             }
         } catch (SQLException e) {
@@ -225,7 +225,7 @@ public class PatientBo extends PersonBo<PatientVo>{
             //Ejecutamos
             if(callable.executeUpdate() != -1){
                 //Recuperamos el elemento en la lista vaciando la variable deleted_at
-                patientVo.setDeleted_at(null);
+                patientVo.setDeletedAt(null);
                 return true;
             }else{
                 System.out.println("No fue posible recuperar al paciente en la base de datos");
@@ -273,9 +273,9 @@ public class PatientBo extends PersonBo<PatientVo>{
                 patient.setSex(resultados.getString("sex"));
                 patient.setDateBirth(resultados.getDate("date_birth"));
                 patient.setDiagnosis(resultados.getString("diagnosis"));
-                patient.setCreated_at(resultados.getDate("created_at"));
-                patient.setUpdated_at(resultados.getDate("updated_at"));
-                patient.setDeleted_at(resultados.getDate("deleted_at"));
+                patient.setCreatedAt(resultados.getDate("created_at"));
+                patient.setUpdatedAt(resultados.getDate("updated_at"));
+                patient.setDeletedAt(resultados.getDate("deleted_at"));
             }
         } catch (SQLException e) {
             //TODO: handle exception

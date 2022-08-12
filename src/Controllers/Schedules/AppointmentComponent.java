@@ -47,7 +47,7 @@ public class AppointmentComponent extends Controller {
 
     public void init() {
         cbSpecialty.setItems(
-            ProfileBo.getInstance().getElements().filtered(el->!el.getName().equals("admin"))
+            ProfileBo.getInstance().getElements().filtered(el->el.getId() != 1 && el.getId() != 2)
         );
         events();
         

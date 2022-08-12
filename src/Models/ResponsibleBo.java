@@ -42,9 +42,9 @@ public class ResponsibleBo extends PersonBo<ResponsibleVo> {
                 responsible.setDni(resultados.getString("dni"));
                 responsible.setCel(resultados.getString("cel"));
                 responsible.setAddress(resultados.getString("address"));
-                responsible.setCreated_at(resultados.getDate("created_at"));
-                responsible.setUpdated_at(resultados.getDate("updated_at"));
-                responsible.setDeleted_at(resultados.getDate("deleted_at"));
+                responsible.setCreatedAt(resultados.getDate("created_at"));
+                responsible.setUpdatedAt(resultados.getDate("updated_at"));
+                responsible.setDeletedAt(resultados.getDate("deleted_at"));
                 lista.add(responsible);
             }
         } catch (SQLException e) {
@@ -178,7 +178,7 @@ public class ResponsibleBo extends PersonBo<ResponsibleVo> {
 
             //Ejecutamos
             if(callable.executeUpdate() != -1){
-                responsibleVo.setDeleted_at(callable.getDate(2));
+                responsibleVo.setDeletedAt(callable.getDate(2));
                 return true;
             }
             
@@ -218,7 +218,7 @@ public class ResponsibleBo extends PersonBo<ResponsibleVo> {
             //Ejecutamos
             if(callable.executeUpdate() != -1){
                 //Recuperamos el elemento en la lista vaciando la variable deleted_at
-                responsibleVo.setDeleted_at(null);
+                responsibleVo.setDeletedAt(null);
                 return true;
             }else{
                 System.out.println("No fue posible recuperar al paciente en la base de datos");
@@ -265,9 +265,9 @@ public class ResponsibleBo extends PersonBo<ResponsibleVo> {
                 responsible.setDni(resultado.getString("dni"));
                 responsible.setCel(resultado.getString("cel"));
                 responsible.setAddress(resultado.getString("address"));
-                responsible.setCreated_at(resultado.getDate("created_at"));
-                responsible.setUpdated_at(resultado.getDate("updated_at"));
-                responsible.setDeleted_at(resultado.getDate("deleted_at"));
+                responsible.setCreatedAt(resultado.getDate("created_at"));
+                responsible.setUpdatedAt(resultado.getDate("updated_at"));
+                responsible.setDeletedAt(resultado.getDate("deleted_at"));
             }
 
             

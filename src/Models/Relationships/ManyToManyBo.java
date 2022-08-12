@@ -73,7 +73,6 @@ public class ManyToManyBo<T,U,V,W> extends ModelBo<ManyToMany<T,U>> {
     
     public boolean create(ManyToMany<T, U> relation)
     {
-
         String query = "CALL add_" + ClassHandler.classNameForRelationsToStringLower(t, u, "_") + "(?,?)";
         CallableStatement callable = null;
 

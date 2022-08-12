@@ -43,9 +43,9 @@ public class UserBo extends PersonBo<UserVo> {
                 usuario.setDni(resultados.getString("dni"));
                 usuario.setUsername(resultados.getString("username"));
                 usuario.setPassword(resultados.getString("password"));
-                usuario.setCreated_at(resultados.getDate("created_at"));
-                usuario.setUpdated_at(resultados.getDate("updated_at"));
-                usuario.setDeleted_at(resultados.getDate("deleted_at"));
+                usuario.setCreatedAt(resultados.getDate("created_at"));
+                usuario.setUpdatedAt(resultados.getDate("updated_at"));
+                usuario.setDeletedAt(resultados.getDate("deleted_at"));
                 lista.add(usuario);
             }
         } catch (SQLException e) {
@@ -212,7 +212,7 @@ public class UserBo extends PersonBo<UserVo> {
             callable.registerOutParameter(2, Types.DATE);
             //Ejecutamos
             if(callable.executeUpdate() != -1){
-                userVo.setDeleted_at(callable.getDate(2));
+                userVo.setDeletedAt(callable.getDate(2));
                 return true;
             }
             
@@ -257,7 +257,7 @@ public class UserBo extends PersonBo<UserVo> {
             //Ejecutamos
             if(callable.executeUpdate() != -1){
                 //Recuperamos el elemento en la lista vaciando la variable deleted_at
-                userVo.setDeleted_at(null);
+                userVo.setDeletedAt(null);
                 return true;
             }else{
                 System.out.println("No fue posible recuperar usuario en la base de datos");

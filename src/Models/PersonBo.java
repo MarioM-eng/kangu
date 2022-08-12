@@ -8,6 +8,11 @@ import javafx.collections.ObservableList;
 
 public abstract class PersonBo<T> extends ModelBo<T> {
 
+    public PersonBo() {
+        super();
+        //TODO Auto-generated constructor stub
+    }
+
     /**
      * Busca a través de la lista de elementos con un caracter o cadena dada
      * @param dato 
